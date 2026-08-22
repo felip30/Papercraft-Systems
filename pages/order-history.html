@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Pedidos - PaperCraft Systems</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/app.css">
+  <style>
+    .orders-header { background: linear-gradient(135deg, var(--primary-600), #152541); color: #fff; padding: 40px 5%; text-align: center; }
+    .orders-container { max-width: 1000px; margin: 0 auto; padding: 30px 5%; }
+    .order-filter { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+    .order-filter button { padding: 8px 16px; background: #fff; border: 1.5px solid var(--gris-200); border-radius: var(--r-md); cursor: pointer; font-size: 12px; transition: all .3s; }
+    .order-filter button.active { background: var(--primary-600); color: #fff; border-color: var(--primary-600); }
+    .order-card { background: #fff; border: 1.5px solid var(--gris-200); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; box-shadow: var(--sombra-sm); }
+    .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .order-id { font-weight: 700; color: var(--primary-600); font-size: 14px; }
+    .order-status { padding: 4px 12px; border-radius: var(--r-full); font-size: 11px; font-weight: 600; }
+    .order-status.pending { background: #fef08a; color: #854d0e; }
+    .order-status.processing { background: #bfdbfe; color: #1e40af; }
+    .order-status.shipped { background: #c7d2fe; color: #3730a3; }
+    .order-status.delivered { background: #dcfce7; color: #166534; }
+    .order-items { border-top: 1px solid var(--gris-100); padding-top: 15px; margin-bottom: 15px; }
+    .order-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; }
+    .order-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--gris-100); }
+    .order-total { font-weight: 700; color: var(--gris-900); }
+    .order-actions { display: flex; gap: 10px; }
+    .order-actions button { padding: 6px 12px; font-size: 11px; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--gris-500); }
+    .empty-state svg { width: 80px; height: 80px; margin-bottom: 20px; opacity: 0.3; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-logo-wrap"><span></span></div>
+    <div style="font-size:16px;font-weight:700;color:var(--primary-700);">PaperCraft</div>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a href="../index.html">Inicio</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="../shop.html">Tienda</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="order-history.html">Mis Pedidos</a>
+  </div>
+  <div class="nav-cta">
+    <a href="../cart.html" class="btn btn-primary"> Carrito</a>
+    <a href="profile.html" class="btn btn-outline" style="margin-left:8px;"></a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="orders-header">
+  <h1> Mis Pedidos</h1>
+  <p>Seguimiento y detalles de tus compras</p>
+</section>
+
+<!-- ORDERS CONTAINER -->
+<div class="orders-container">
+  
+  <!-- FILTER -->
+  <div class="order-filter">
+    <button class="active" onclick="filterOrders('all')">Todos</button>
+    <button onclick="filterOrders('pending')">⏳ Pendiente</button>
+    <button onclick="filterOrders('processing')"> Procesando</button>
+    <button onclick="filterOrders('shipped')"> Enviado</button>
+    <button onclick="filterOrders('delivered')"> Entregado</button>
+  </div>
+
+  <!-- ORDERS LIST -->
+  <div id="ordersList">
+    
+    <!-- ORDER 1 -->
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">Pedido #ORD-001234</div>
+          <div style="font-size: 12px; color: var(--gris-500);">Realizado el 01 de agosto de 2024</div>
+        </div>
+        <span class="order-status delivered"> Entregado</span>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item">
+          <span>Tarjeta Navidad Premium (x2)</span>
+          <span style="font-weight: 600;">$128.000</span>
+        </div>
+        <div class="order-item">
+          <span>Kit Artesanía Deluxe (x1)</span>
+          <span style="font-weight: 600;">$184.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div>
+          <div style="font-size: 12px; color: var(--gris-600);">Total</div>
+          <div class="order-total">$312.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-sm btn-primary"> Ver Detalles</button>
+          <button class="btn btn-sm btn-outline"> Reordenar</button>
+          <button class="btn btn-sm btn-outline"> Reseña</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 2 -->
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">Pedido #ORD-001233</div>
+          <div style="font-size: 12px; color: var(--gris-500);">Realizado el 28 de julio de 2024</div>
+        </div>
+        <span class="order-status shipped"> Enviado</span>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item">
+          <span>Figura Decorativa 3D (x3)</span>
+          <span style="font-weight: 600;">$360.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div>
+          <div style="font-size: 12px; color: var(--gris-600);">Total</div>
+          <div class="order-total">$360.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-sm btn-primary"> Ver Detalles</button>
+          <button class="btn btn-sm btn-outline"> Rastrear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER 3 -->
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">Pedido #ORD-001232</div>
+          <div style="font-size: 12px; color: var(--gris-500);">Realizado el 25 de julio de 2024</div>
+        </div>
+        <span class="order-status processing"> Procesando</span>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item">
+          <span>Paquete 100 Tarjetas Blancas (x1)</span>
+          <span style="font-weight: 600;">$52.000</span>
+        </div>
+        <div class="order-item">
+          <span>Envío</span>
+          <span style="font-weight: 600;">$20.000</span>
+        </div>
+      </div>
+
+      <div class="order-footer">
+        <div>
+          <div style="font-size: 12px; color: var(--gris-600);">Total</div>
+          <div class="order-total">$72.000</div>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-sm btn-primary"> Ver Detalles</button>
+          <button class="btn btn-sm btn-outline"> Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMPTY STATE (si no hay pedidos) -->
+  <div id="emptyState" style="display:none;">
+    <div class="empty-state">
+      <div style="font-size: 64px; margin-bottom: 20px;"></div>
+      <h3 style="color: var(--gris-700); margin-bottom: 10px;">No hay pedidos</h3>
+      <p>Aún no has realizado ninguna compra.</p>
+      <a href="../shop.html" class="btn btn-primary" style="margin-top: 20px; display: inline-block;">Ir a Tienda</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCRIPTS -->
+<script src="../js/utils/icons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+
+<script>
+  let allOrders = [
+    {
+      id: 'ORD-001234',
+      date: '01/08/2024',
+      status: 'delivered',
+      total: 77.97,
+      items: [
+        { name: 'Tarjeta Navidad Premium (x2)', price: 31.98 },
+        { name: 'Kit Artesanía Deluxe (x1)', price: 45.99 }
+      ]
+    },
+    {
+      id: 'ORD-001233',
+      date: '28/07/2024',
+      status: 'shipped',
+      total: 89.97,
+      items: [
+        { name: 'Figura Decorativa 3D (x3)', price: 89.97 }
+      ]
+    },
+    {
+      id: 'ORD-001232',
+      date: '25/07/2024',
+      status: 'processing',
+      total: 17.99,
+      items: [
+        { name: 'Paquete 100 Tarjetas Blancas (x1)', price: 12.99 },
+        { name: 'Envío', price: 5.00 }
+      ]
+    }
+  ];
+
+  function filterOrders(status) {
+    document.querySelectorAll('.order-filter button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    if (status === 'all') {
+      console.log('Mostrando todos los pedidos');
+    } else {
+      console.log('Filtrando por:', status);
+    }
+  }
+</script>
+
+</body>
+</html>

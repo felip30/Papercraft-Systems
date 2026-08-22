@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaperCraft Systems - Diseña, Construye, Domina</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
+       modal bloquea el scroll (position: fixed en body), se asoma el
+       blanco por defecto del navegador en el hueco que queda */
+    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
+       transparente y la lluvia de números (z-index: -1) se sigue viendo
+       por delante del fondo, en vez de quedar tapada */
+    html {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
+    }
+    body {
+      background: transparent;
+      color: #e8ecf1;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* NAVBAR: .navbar, .nav-brand, .nav-links, .navbar-auth-section, .btn y
+       .btn-logout vienen de css/app.css (con flex-wrap para que nunca se
+       superpongan). Aquí solo queda lo específico de esta página. */
+    .nav-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #00D9FF, #FF006E);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 60px 5%;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero-logo {
+      font-size: 120px;
+      margin-bottom: 30px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 10vw, 4.5rem);
+      font-weight: 900;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #00D9FF, #FF006E, #39FF14, #00D9FF);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient 3s ease infinite;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hero-tagline {
+      font-size: clamp(1.2rem, 5vw, 2rem);
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffffff;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+      text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: #a8b8cc;
+      margin-bottom: 50px;
+      line-height: 1.8;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* FEATURES */
+    .features {
+      padding: 80px 5%;
+      background: rgba(10, 14, 39, 0.8);
+      border-top: 2px solid #00D9FF;
+      border-bottom: 2px solid #FF006E;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 50px;
+      background: linear-gradient(135deg, #00D9FF, #FF006E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      text-align: center;
+    }
+
+    .feature-icon { font-size: 50px; margin-bottom: 20px; display: flex; justify-content: center; color: #00D9FF; }
+    .feature-card h3 { color: #00D9FF; font-size: 1.5rem; margin-bottom: 15px; }
+    .feature-card p { color: #a8b8cc; line-height: 1.6; }
+
+    /* Tarjetas funcionales del panel de Características (ver funciones al
+       final del script: Pagos Seguros, Cuentas Seguras y Panel Admin). */
+    .feature-card.is-admin-clickable { cursor: pointer; }
+    .feature-card-badge {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #39FF14;
+      border: 1px solid #39FF14;
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    /* Carrusel 3D cilíndrico de "Características": las mismas 6 tarjetas
+       de siempre, con el mismo borde neón intermitente, ahora ubicadas
+       alrededor de un cilindro que se rota con las flechas laterales. */
+    .carousel-3d-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      max-width: 880px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .carousel-3d-stage {
+      perspective: 2600px;
+      width: 320px;
+      height: 340px;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0 auto;
+    }
+
+    .carousel-3d-ring {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .carousel-3d-item {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 300px;
+      height: 100%;
+      margin-left: -150px;
+      backface-visibility: hidden;
+      transform: rotateY(var(--card-angle)) translateZ(340px);
+    }
+
+    /* Esta es la capa que de verdad se ve: se "contra-rota" todo el
+       tiempo lo opuesto a su posición en el cilindro, así siempre mira
+       de frente a quien la ve, sin importar en qué ángulo esté ubicada. */
+    .carousel-3d-item-face {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transform: rotateY(var(--counter-angle, 0deg));
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s, box-shadow 0.3s;
+    }
+    .carousel-3d-item:hover .carousel-3d-item-face {
+      border-color: #39FF14;
+      box-shadow: 0 0 40px rgba(57, 255, 20, 0.6);
+      transform: rotateY(var(--counter-angle, 0deg)) scale(1.12);
+      transition: transform 0.25s ease, border-color 0.25s, box-shadow 0.25s;
+      z-index: 2;
+    }
+
+    .carousel-arrow {
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(0, 217, 255, 0.08);
+      border: 2px solid #00D9FF;
+      color: #00D9FF;
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .carousel-arrow:hover {
+      background: rgba(0, 217, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+      transform: scale(1.08);
+    }
+
+    @media (max-width: 640px) {
+      .carousel-3d-stage { width: 240px; height: 320px; overflow: hidden; }
+      .carousel-3d-item { width: 220px; margin-left: -110px; }
+      .carousel-arrow { width: 40px; height: 40px; font-size: 1.3rem; }
+    }
+
+    /* Pestañas del modal Vault Gamer */
+    .vault-gamer-tab-btn {
+      background: rgba(15, 24, 41, 0.8);
+      border: 1px solid rgba(0, 217, 255, 0.4);
+      color: #a8b8cc;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .vault-gamer-tab-btn:hover { border-color: #00D9FF; color: #e8ecf1; }
+    .vault-gamer-tab-btn.active {
+      background: linear-gradient(135deg, #00D9FF, #0066FF);
+      border-color: #00D9FF;
+      color: #0a0e27;
+    }
+
+    /* Ilustración de "microchip" del modal Explorar Tienda: cada pin es un
+       acceso directo a una de las funciones del sitio. Las filas con varios
+       pines (arriba/abajo) comparten un "tronco" horizontal real (no una
+       posición calculada a ojo), así las conexiones siempre calzan sin
+       importar cuántos pines tenga la fila. */
+    .chip-trunk-row { display: flex; flex-direction: column; align-items: stretch; }
+
+    .chip-pins-flex { display: flex; flex-direction: row; justify-content: space-evenly; gap: 6px; flex-wrap: wrap; }
+
+    .chip-trunk-line { height: 2px; background: rgba(255, 184, 77, 0.55); margin: 0 8%; }
+    .chip-trunk-drop { width: 2px; height: 18px; background: rgba(255, 184, 77, 0.55); align-self: center; }
+
+    .chip-row-middle { display: flex; align-items: center; justify-content: center; gap: 0; margin: 6px 0; flex-wrap: wrap; }
+
+    .chip-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 4px;
+    }
+    .chip-pin-horizontal { flex-direction: row; }
+
+    .chip-pin-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 184, 77, 0.1);
+      border: 1px solid #FFB84D;
+      color: #FFB84D;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .chip-pin:hover .chip-pin-label { background: rgba(255, 184, 77, 0.25); box-shadow: 0 0 14px rgba(255, 184, 77, 0.5); }
+    .chip-pin.chip-pin-static { cursor: default; }
+    .chip-pin.chip-pin-static .chip-pin-label { opacity: 0.7; }
+    .chip-pin.chip-pin-static:hover .chip-pin-label { background: rgba(255, 184, 77, 0.1); box-shadow: none; }
+
+    .chip-leg-v { width: 2px; height: 14px; background: #FFB84D; }
+    .chip-leg-h { width: 22px; height: 2px; background: #FFB84D; }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #FFB84D; flex-shrink: 0; }
+
+    .chip-body {
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+      background: #0a0e27;
+      border: 3px solid #FFB84D;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #FFB84D;
+      box-shadow: 0 0 25px rgba(255, 184, 77, 0.35);
+      cursor: pointer;
+    }
+    .chip-body p { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.05em; }
+
+    /* Animación RGB: la señal "viaja" desde el centro (chip) hacia el pin
+       elegido, con un pequeño desfase (delay) entre leg -> dot -> label. */
+    @keyframes chipRgbSweep {
+      0%   { filter: hue-rotate(0deg) brightness(1); }
+      50%  { filter: hue-rotate(180deg) brightness(1.9); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+    .chip-signal-center { animation: chipRgbSweep 0.55s ease-in-out; }
+    .chip-signal-leg { animation: chipRgbSweep 0.55s ease-in-out; animation-delay: 0.05s; }
+    .chip-signal-dot { animation: chipRgbSweep 0.55s ease-in-out; animation-delay: 0.18s; }
+    .chip-signal-label { animation: chipRgbSweep 0.55s ease-in-out; animation-delay: 0.3s; }
+
+    @media (max-width: 480px) {
+      .chip-pins-flex { gap: 14px 8px; }
+      .chip-trunk-line, .chip-trunk-drop { display: none; }
+      .chip-body { width: 100px; height: 100px; }
+    }
+
+    /* PRODUCTS PREVIEW */
+    .products-preview {
+      padding: 80px 5%;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    }
+
+    .product-card:hover {
+      border-color: #FF006E;
+      box-shadow: 0 0 40px rgba(255, 0, 110, 0.5);
+      transform: translateY(-10px);
+    }
+
+    .product-image {
+      background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 70px;
+    }
+
+    .product-info { padding: 20px; text-align: center; }
+    .product-name { color: #00D9FF; font-weight: 700; margin-bottom: 10px; }
+    .product-price { color: #39FF14; font-size: 1.3rem; font-weight: 900; }
+
+    /* CTA */
+    .cta-section {
+      padding: 80px 5%;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+      border-top: 2px solid #00D9FF;
+      border-bottom: 2px solid #FF006E;
+    }
+
+    .cta-content {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .cta-section h2 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #00D9FF, #FF006E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      font-weight: 900;
+    }
+
+    .cta-section p {
+      font-size: 1.2rem;
+      color: #a8b8cc;
+      margin-bottom: 40px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: rgba(10, 14, 39, 0.95);
+      border-top: 2px solid #00D9FF;
+      padding: 40px 5%;
+      text-align: center;
+      color: #a8b8cc;
+    }
+
+    .footer-social a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 217, 255, 0.08);
+      border: 1.5px solid #00D9FF;
+      color: #00D9FF;
+      transition: all 0.25s;
+    }
+    .footer-social a:hover {
+      background: #00D9FF;
+      color: #0a0e27;
+      box-shadow: 0 0 18px rgba(0, 217, 255, 0.7);
+      transform: translateY(-3px);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .navbar-auth-section { flex-direction: column; gap: 8px; width: 100%; }
+      .hero { padding: 40px 5%; }
+      .hero-logo { font-size: 80px; }
+      .hero h1 { font-size: 2rem; }
+      .section-title { font-size: 2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    }
+    /* FONDO ANIMADO MATRIX (agregado sin modificar los estilos existentes) */
+    #matrixRain {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    /* Zorro corriendo en pixel art, justo sobre la línea del navbar.
+       Recorre todo el ancho de la pantalla y vuelve al inicio en bucle. */
+    .fox-runner-track {
+      position: relative;
+      width: 100%;
+      height: 0;
+      margin-top: -28px;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .fox-runner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 90px;
+      height: 56px;
+      padding: 0;
+      background: none;
+      border: none;
+      pointer-events: auto;
+      cursor: pointer;
+      /* transform (no "left") es lo que se anima: el navegador la puede
+         mover con la tarjeta gráfica sin recalcular el diseño de toda la
+         página en cada cuadro — antes, animar "left" causaba una traba
+         perceptible cada vez que el recorrido volvía al inicio. */
+      animation: foxRunAcross 11s linear infinite;
+      will-change: transform;
+    }
+    /* Al pasar el mouse por encima, se detiene del todo (carrera + rebote)
+       para poder hacerle clic sin tener que perseguirlo. */
+    .fox-runner:hover {
+      animation-play-state: paused;
+    }
+    .fox-runner-bob {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.9)) drop-shadow(0 0 16px rgba(255, 122, 26, 0.5));
+      animation: foxRunBob 0.35s ease-in-out infinite;
+    }
+    .fox-runner:hover .fox-runner-bob {
+      animation-play-state: paused;
+      filter: drop-shadow(0 0 10px rgba(255, 122, 26, 1)) drop-shadow(0 0 22px rgba(255, 122, 26, 0.7));
+    }
+    @keyframes foxRunAcross {
+      0%   { transform: translateX(-90px); }
+      100% { transform: translateX(calc(100vw + 90px)); }
+    }
+    @keyframes foxRunBob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-0.6px); }
+    }
+
+    /* Burbuja "i" que aparece sobre el zorro cada tanto, para invitar a
+       hacer clic — se repite en bucle mientras el zorro corre. */
+    .fox-info-hint {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00D9FF;
+      color: #0a0e27;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: 900;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(0, 217, 255, 0.9);
+      opacity: 0;
+      transform: translateX(-50%) scale(0);
+      animation: foxInfoHintPulse 6s ease-in-out infinite;
+    }
+    @keyframes foxInfoHintPulse {
+      0%, 50%   { opacity: 0; transform: translateX(-50%) scale(0); }
+      58%       { opacity: 1; transform: translateX(-50%) scale(1.3); }
+      64%, 84%  { opacity: 1; transform: translateX(-50%) scale(1); }
+      92%, 100% { opacity: 0; transform: translateX(-50%) scale(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fox-runner { animation: none; transform: translateX(-90px); }
+      .fox-runner-bob { animation: none; }
+      .fox-info-hint { animation: none; opacity: 1; transform: translateX(-50%) scale(1); }
+    }
+  
+    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
+       muestra apenas arranca la página y se oculta solo cuando los datos
+       ya están listos para mostrarse. */
+    #pageLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #0a0e27;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      transition: opacity 0.35s ease;
+    }
+    #pageLoader.page-loader-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .page-loader-ring-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid rgba(0, 217, 255, 0.15);
+      border-top-color: #00D9FF;
+      border-right-color: #FF006E;
+      animation: pageLoaderSpin 1s linear infinite;
+    }
+    .page-loader-fox {
+      width: 56px;
+      height: auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
+    }
+    @keyframes pageLoaderSpin {
+      to { transform: rotate(360deg); }
+    }
+    .page-loader-text {
+      color: #a8b8cc;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .page-loader-ring { animation: none; }
+    }
+
+  </style>
+</head>
+<body>
+<div id="pageLoader">
+  <div class="page-loader-ring-wrap">
+    <div class="page-loader-ring"></div>
+    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
+      <!-- cola enroscada al frente -->
+      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
+      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
+      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
+      <!-- cuerpo sentado (más ancho abajo) -->
+      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
+      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
+      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
+      <!-- cabeza -->
+      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
+      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
+      <!-- orejas -->
+      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <!-- ojos cerrados (esperando tranquilo) -->
+      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
+      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
+      <!-- hocico -->
+      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
+      <!-- patas delanteras -->
+      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
+      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
+    </svg>
+  </div>
+  <p class="page-loader-text">Cargando...</p>
+</div>
+<script>
+  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
+  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
+  // carga para siempre.
+  setTimeout(() => {
+    const el = document.getElementById('pageLoader');
+    if (el) el.classList.add('page-loader-hidden');
+  }, 8000);
+</script>
+
+
+
+<!-- FONDO ANIMADO ESTILO MATRIX (0 y 1 en morado neón) -->
+<canvas id="matrixRain" aria-hidden="true"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand" onclick="location.href='index.html'">
+    <div class="nav-logo">
+      <svg viewBox="0 0 32 24" style="width:26px; height:20px;" shape-rendering="crispEdges" aria-hidden="true">
+        <!-- orejas -->
+        <rect x="2" y="0" width="6" height="8" fill="#FF7A1A"/>
+        <rect x="24" y="0" width="6" height="8" fill="#FF7A1A"/>
+        <rect x="4" y="2" width="2" height="4" fill="#3a2415"/>
+        <rect x="26" y="2" width="2" height="4" fill="#3a2415"/>
+        <!-- cabeza -->
+        <rect x="2" y="6" width="28" height="14" fill="#FF9F3D"/>
+        <rect x="6" y="16" width="20" height="6" fill="#FFF3E0"/>
+        <!-- gafas -->
+        <rect x="5" y="10" width="9" height="6" fill="#0a0e27" stroke="#00D9FF" stroke-width="1.3"/>
+        <rect x="18" y="10" width="9" height="6" fill="#0a0e27" stroke="#00D9FF" stroke-width="1.3"/>
+        <rect x="14" y="12" width="4" height="1.3" fill="#00D9FF"/>
+        <!-- nariz -->
+        <rect x="14" y="17" width="4" height="3" fill="#2B1810"/>
+      </svg>
+    </div>
+    <span>PaperCraft</span>
+  </div>
+  <div class="nav-spacer"></div>
+  <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Abrir menú">>
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="#features">Características</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="shop.html"> Tienda</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="cart.html" data-auth-only style="display:none;"> Carrito</a>
+    <span class="nav-sep" data-auth-only aria-hidden="true" style="display:none;"></span>
+    <a href="games.html"> Juegos</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="#" data-auth-only style="display:none;" onclick="openProfileModal(); return false;"> Mi Perfil</a>
+    <span class="nav-sep" data-auth-only aria-hidden="true" style="display:none;"></span>
+    <a href="admin.html" data-admin-only style="display:none;"> Panel Admin</a>
+  </div>
+  <div class="navbar-auth-section">
+    <button onclick="openLoginModal()" class="btn">
+       Iniciar Sesión
+    </button>
+    <button onclick="openRegisterModal()" class="btn">
+       Registrarse
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-logo">🦊</div>
+    <h1>PAPERCRAFT SYSTEMS</h1>
+    <div class="hero-tagline">Diseña • Construye • Domina</div>
+    <p class="hero-description">
+      La plataforma e-commerce más futurista. Papelería premium y tecnología de vanguardia en un solo lugar.
+    </p>
+    <div class="hero-cta">
+      <a href="#" class="btn" onclick="openExploreChipModal(); return false;">Explorar Tienda</a>
+      <a href="#" class="btn" style="background: transparent; color: #00D9FF; border-color: #FF006E;" onclick="openMasInfoModal(); return false;">Más Info</a>
+    </div>
+  </div>
+</section>
+
+<!-- Zorro corriendo en pixel art, anclado a la línea cian que separa el
+     hero de "Características". Recorre todo el ancho y vuelve al inicio
+     en bucle. -->
+<div class="fox-runner-track">
+  <button type="button" class="fox-runner" onclick="openMasInfoModal()" aria-label="Información de PaperCraft Systems">
+    <span class="fox-info-hint">i</span>
+    <div class="fox-runner-bob">
+      <svg viewBox="0 0 32 20" shape-rendering="crispEdges" style="width:100%; height:100%;">
+        <!-- cola -->
+        <rect x="1"  y="8"  width="2" height="2" fill="#FF7A1A"/>
+        <rect x="0"  y="10" width="2" height="2" fill="#FF7A1A"/>
+        <rect x="1"  y="12" width="2" height="2" fill="#FFF3E0"/>
+        <!-- cuerpo -->
+        <rect x="3"  y="6"  width="10" height="6" fill="#FF9F3D"/>
+        <rect x="5"  y="10" width="6"  height="2" fill="#FFF3E0"/>
+        <!-- cabeza -->
+        <rect x="11" y="3"  width="7" height="6" fill="#FF9F3D"/>
+        <rect x="13" y="6"  width="4" height="2" fill="#FFF3E0"/>
+        <!-- orejas -->
+        <rect x="11" y="1" width="2" height="2" fill="#FF7A1A"/>
+        <rect x="16" y="1" width="2" height="2" fill="#FF7A1A"/>
+        <!-- hocico -->
+        <rect x="18" y="6" width="2" height="2" fill="#2B1810"/>
+        <!-- ojo -->
+        <rect x="15" y="4" width="1" height="1" fill="#2B1810"/>
+        <!-- patas (pose de carrera: delanteras y traseras alternadas) -->
+        <rect id="fox-leg-back-1"  x="4"  y="12" width="2" height="4" fill="#2B1810"/>
+        <rect id="fox-leg-back-2"  x="7"  y="12" width="2" height="3" fill="#2B1810"/>
+        <rect id="fox-leg-front-1" x="10" y="12" width="2" height="3" fill="#2B1810"/>
+        <rect id="fox-leg-front-2" x="13" y="12" width="2" height="4" fill="#2B1810"/>
+      </svg>
+    </div>
+  </button>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <h2 class="section-title">Características</h2>
+  <div class="carousel-3d-wrap">
+    <button type="button" class="carousel-arrow" onclick="rotateFeaturesCarousel(-1)" aria-label="Anterior">&#8249;</button>
+
+    <div class="carousel-3d-stage">
+      <div class="carousel-3d-ring" id="featuresCarouselRing">
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-pagos" onclick="handleFeaturePagosClick()" style="--card-angle: 0deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="card" data-icon-size="42"></span></div>
+            <h3>Pagos Seguros</h3>
+            <p>Pago con tarjeta o en tienda, con factura en PDF automática</p>
+            <span class="feature-card-badge">Clic para probar</span>
+          </div>
+        </div>
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-productos" onclick="handleFeatureProductosClick()" style="--card-angle: 60deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="package" data-icon-size="42"></span></div>
+            <h3>Vault Gamer</h3>
+            <p>Guías y tutoriales de videojuegos, con o sin sesión</p>
+            <span class="feature-card-badge">Ver blog</span>
+          </div>
+        </div>
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-juegos" onclick="handleFeatureJuegosClick()" style="--card-angle: 120deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="game" data-icon-size="42"></span></div>
+            <h3>Juegos Interactivos</h3>
+            <p>Ruleta y Memoria con premios reales</p>
+            <span class="feature-card-badge">Ir a Juegos</span>
+          </div>
+        </div>
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-cuentas-seguras" onclick="handleFeatureCuentasSegurasClick()" style="--card-angle: 180deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="lock" data-icon-size="42"></span></div>
+            <h3>Cuentas Seguras</h3>
+            <p>Registro y autenticación con contraseña encriptada</p>
+            <span class="feature-card-badge">Ver protección</span>
+          </div>
+        </div>
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-responsive" onclick="openResponsiveQRModal()" style="--card-angle: 240deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="package" data-icon-size="42"></span></div>
+            <h3>100% Responsive</h3>
+            <p>Perfecto en desktop, tablet y móvil</p>
+            <span class="feature-card-badge">Escanea y compruébalo</span>
+          </div>
+        </div>
+        <div class="feature-card is-admin-clickable carousel-3d-item" id="feature-panel-admin" onclick="handleFeaturePanelAdminClick()" style="--card-angle: 300deg;">
+          <div class="carousel-3d-item-face">
+            <div class="feature-icon"><span data-icon="admin" data-icon-size="42"></span></div>
+            <h3>Panel Admin</h3>
+            <p>Gestión completa de productos, usuarios y estadísticas</p>
+            <span class="feature-card-badge">Clic para probar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="carousel-arrow" onclick="rotateFeaturesCarousel(1)" aria-label="Siguiente">&#8250;</button>
+  </div>
+</section>
+
+<!-- PRODUCTS PREVIEW -->
+<section class="products-preview" id="products">
+  <h2 class="section-title"> Productos Destacados</h2>
+  <div class="products-grid" id="products-preview-grid">
+    <!-- Se llena con JavaScript -->
+  </div>
+</section>
+
+<!-- CTA: solo se muestra a visitantes que no han iniciado sesión, ya que
+     invita a "Crear Cuenta" (no tiene sentido si ya estás logueado) -->
+<section class="cta-section" data-public-only>
+  <div class="cta-content">
+    <h2>¿Listo para Dominar?</h2>
+    <p>Regístrate ahora y comienza a explorar nuestro catálogo</p>
+    <button onclick="openRegisterModal()" class="btn" style="padding: 15px 40px; font-size: 1.1rem;">
+       Crear Cuenta
+    </button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-social" id="footer-social" style="display:flex; justify-content:center; gap:20px; margin-bottom:16px;">
+    <!-- Se llena con JavaScript (Instagram / WhatsApp desde el Panel Admin) -->
+  </div>
+  <p>&copy; 2026 PaperCraft Systems. Todos los derechos reservados. </p>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="js/utils/icons.js"></script>
+<script src="js/utils/currency.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/invoice.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dataManager.js"></script>
+<script src="js/ui.js"></script>
+
+<script>
+  // Login, Registro, Recuperación de contraseña, Mi Perfil y Logout
+  // están definidos globalmente en js/ui.js (disponibles en todas las páginas)
+
+  // Cargar productos en preview
+  // gira el aro completo; cada tarjeta ya tiene su ángulo fijo (rotateY)
+  let featuresCarouselAngle = 0;
+  const FEATURES_CAROUSEL_STEP = 60; // 360° / 6 tarjetas
+  const FEATURES_CARD_ANGLES = [0, 60, 120, 180, 240, 300]; // mismo orden que las tarjetas en el HTML
+
+  // Cada tarjeta "contra-rota" lo opuesto a (giro del aro + su propio
+  // ángulo), para que siempre mire de frente sin importar dónde esté
+  // ubicada en el cilindro.
+  function updateFeaturesCounterRotation() {
+    const faces = document.querySelectorAll('#featuresCarouselRing .carousel-3d-item-face');
+    faces.forEach((face, i) => {
+      const total = featuresCarouselAngle + FEATURES_CARD_ANGLES[i];
+      face.style.setProperty('--counter-angle', `${-total}deg`);
+    });
+  }
+
+  function rotateFeaturesCarousel(direction) {
+    featuresCarouselAngle += direction * FEATURES_CAROUSEL_STEP;
+    const ring = document.getElementById('featuresCarouselRing');
+    if (ring) ring.style.transform = `rotateY(${featuresCarouselAngle}deg)`;
+    updateFeaturesCounterRotation();
+  }
+  updateFeaturesCounterRotation(); // estado inicial, apenas carga la página
+
+  function loadProductsPreview() {
+    const allProducts = window.DataManager.getProducts();
+    // Mezcla real: 2 productos de papelería + 2 de tecnología, para que la
+    // vista previa siempre muestre variedad de ambas categorías.
+    const papeleria = allProducts.filter(p => p.categoria === 'papelería').slice(0, 2);
+    const tecnologia = allProducts.filter(p => p.categoria === 'tecnología').slice(0, 2);
+    const products = [...papeleria, ...tecnologia];
+    const grid = document.getElementById('products-preview-grid');
+    
+    grid.innerHTML = products.map(p => `
+      <div class="product-card" onclick="handleProductPreviewClick()" style="cursor:pointer;">
+        <div class="product-image" data-fallback-icon="${p.icon || 'package'}">${p.imagen ? `<img src="${escapeHtml(p.imagen)}" alt="${escapeHtml(p.nombre)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;" onerror="handleProductImgError(this)">` : Icons.svg(p.icon || 'package', { size: 40 })}</div>
+        <div class="product-info">
+          <div class="product-name">${p.nombre}</div>
+          <div class="product-price">${formatCOP(p.precio)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // si la imagen falla, usa el ícono de respaldo (data-* evita mezclar comillas del SVG)
+  function handleProductImgError(imgEl) {
+    const container = imgEl.parentElement;
+    const iconName = container.getAttribute('data-fallback-icon') || 'package';
+    container.innerHTML = Icons.svg(iconName, { size: 40 });
+  }
+
+  function handleProductPreviewClick() {
+    const auth = window.AuthManager;
+    if (!auth.isAuthenticated) {
+      window.UIManager.toast('Inicia sesión para ver los productos de la tienda', 'warning');
+      openLoginModal();
+      return;
+    }
+    location.href = 'shop.html';
+  }
+
+  // Contactos del footer (Instagram, WhatsApp, correo, teléfono, u otros),
+  // configurables desde el Panel Admin (pestaña "Redes"). Se muestran en
+  // el orden guardado; si no hay ninguno, el bloque queda vacío.
+  const REDES_ICONOS = {
+    instagram: 'instagram', whatsapp: 'whatsapp', facebook: 'facebook',
+    tiktok: 'tiktok', youtube: 'youtube', twitterX: 'twitterX',
+    email: 'mail', telefono: 'phone', otro: 'link'
+  };
+  const REDES_ETIQUETAS = {
+    instagram: 'Instagram', whatsapp: 'WhatsApp', facebook: 'Facebook',
+    tiktok: 'TikTok', youtube: 'YouTube', twitterX: 'X (Twitter)',
+    email: 'Correo', telefono: 'Teléfono', otro: 'Enlace'
+  };
+  function redSocialHref(red) {
+    if (red.tipo === 'email') return `mailto:${red.valor}`;
+    if (red.tipo === 'telefono') return `tel:${red.valor}`;
+    return red.valor;
+  }
+
+  async function loadFooterSocial() {
+    const cont = document.getElementById('footer-social');
+    if (!cont) return;
+    const redes = await window.DataManager.getRedesSociales();
+    cont.innerHTML = redes.map(r => {
+      const icono = REDES_ICONOS[r.tipo] || 'link';
+      const label = r.tipo === 'otro' && r.etiqueta ? r.etiqueta : (REDES_ETIQUETAS[r.tipo] || 'Enlace');
+      const externo = r.tipo !== 'email' && r.tipo !== 'telefono';
+      return `<a href="${escapeHtml(redSocialHref(r))}" ${externo ? 'target="_blank" rel="noopener"' : ''} aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}" data-icon="${icono}" data-icon-size="20"></a>`;
+    }).join('');
+    Icons.hydrate(cont);
+  }
+
+  window.addEventListener('load', async () => {
+    await Promise.all([window.AuthManager.ready(), window.DataManager.ready()]);
+    const _pageLoader = document.getElementById('pageLoader');
+    if (_pageLoader) _pageLoader.classList.add('page-loader-hidden');
+    window.UIManager.updateUIByRole();
+    loadProductsPreview();
+    loadFooterSocial();
+  });
+
+  function handleFeaturePanelAdminClick() {
+    const auth = window.AuthManager;
+
+    if (!auth.isAuthenticated) {
+      window.UIManager.toast('Inicia sesión para acceder al Panel Admin', 'warning');
+      openLoginModal();
+      return;
+    }
+
+    if (!auth.hasPermission('admin')) {
+      window.UIManager.toast('Necesitas una cuenta de administrador para acceder al Panel Admin', 'error');
+      return;
+    }
+
+    location.href = 'admin.html';
+  }
+
+  function handleFeatureJuegosClick() {
+    location.href = 'games.html';
+  }
+
+  function handleFeatureProductosClick() {
+    openVaultGamerModal();
+  }
+
+  function openVaultGamerModal(selectedId = null) {
+    const games = window.DataManager.getVaultGames();
+    if (games.length === 0) {
+      window.UIManager.toast('Todavía no hay juegos cargados en Vault Gamer', 'info');
+      return;
+    }
+
+    const activeId = selectedId || games[0].id;
+
+    const content = `
+      <div>
+        <div id="vault-gamer-tabs" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; border-bottom:1px solid rgba(0,217,255,0.3); padding-bottom:14px;">
+          ${games.map(g => `
+            <button type="button" onclick="switchVaultGamerTab(${g.id})" id="vault-tab-btn-${g.id}"
+                    class="vault-gamer-tab-btn ${g.id === activeId ? 'active' : ''}">
+              ${g.titulo}
+            </button>
+          `).join('')}
+        </div>
+        <div id="vault-gamer-panel"></div>
+        <p style="color:#6b7a90; font-size:0.7rem; margin-top:16px;">
+          Los nombres y estudios pertenecen a sus respectivos creadores; esta sección solo ofrece información y consejos generales.
+        </p>
+      </div>
+    `;
+    window.UIManager.openModal(content, 'Vault Gamer');
+    renderVaultGamerPanel(activeId);
+  }
+
+  function switchVaultGamerTab(gameId) {
+    document.querySelectorAll('.vault-gamer-tab-btn').forEach(btn => btn.classList.remove('active'));
+    const btn = document.getElementById(`vault-tab-btn-${gameId}`);
+    if (btn) btn.classList.add('active');
+    renderVaultGamerPanel(gameId);
+  }
+
+  function renderVaultGamerPanel(gameId) {
+    const game = window.DataManager.getVaultGameById(gameId);
+    const panel = document.getElementById('vault-gamer-panel');
+    if (!game || !panel) return;
+
+    const cover = game.imagen
+      ? `<img src="${game.imagen}" alt="${game.titulo}" style="width:100%; height:180px; object-fit:cover; border-radius:10px; display:block;">`
+      : `<div style="width:100%; height:180px; border-radius:10px; background:linear-gradient(135deg, ${game.color}33, ${game.color}0d); border:1px solid ${game.color}; display:flex; align-items:center; justify-content:center; color:${game.color};">
+           <span data-icon="${game.icon}" data-icon-size="60"></span>
+         </div>`;
+
+    panel.innerHTML = `
+      ${cover}
+      <div style="margin-top:16px;">
+        <p style="color:#00D9FF; font-weight:800; font-size:1.2rem;">${game.titulo}</p>
+        <p style="color:#a8b8cc; font-size:0.8rem; margin-bottom:12px;">${game.estudio} &middot; ${game.categoria}</p>
+
+        <p style="color:#e8ecf1; font-size:0.9rem; line-height:1.6; margin-bottom:16px;">${game.descripcionDetallada || game.resumen}</p>
+
+        <p style="color:#39FF14; font-weight:700; font-size:0.85rem; margin-bottom:8px;">Tutorial: cómo avanzar</p>
+        <ul style="color:#a8b8cc; font-size:0.85rem; line-height:1.7; padding-left:18px; margin:0;">
+          ${(game.tutorial || []).map(t => `<li>${t}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+    if (window.Icons) window.Icons.hydrate(panel);
+  }
+
+  function handleFeatureCuentasSegurasClick() {
+    openSecurityInfoModal();
+  }
+
+  function openSecurityInfoModal() {
+    const content = `
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <p style="color:#a8b8cc; font-size:0.9rem;">
+          Así protegemos tu cuenta y tus datos dentro de PaperCraft Systems:
+        </p>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span data-icon="lock" data-icon-size="22" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:2px;">Contraseñas encriptadas</p>
+            <p style="color:#a8b8cc; font-size:0.85rem;">Nunca se guardan ni se muestran en texto plano en ningún formulario.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span data-icon="eye" data-icon-size="22" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:2px;">Validación en tiempo real</p>
+            <p style="color:#a8b8cc; font-size:0.85rem;">Te avisamos al instante si una contraseña es muy corta o si la confirmación no coincide, antes de enviar el formulario.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span data-icon="checkCircle" data-icon-size="22" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:2px;">Pregunta de seguridad</p>
+            <p style="color:#a8b8cc; font-size:0.85rem;">Cada cuenta define una pregunta y respuesta propias para recuperar el acceso sin depender solo del correo.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span data-icon="card" data-icon-size="22" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:2px;">Pago seguro</p>
+            <p style="color:#a8b8cc; font-size:0.85rem;">Los datos de tarjeta ingresados en el checkout se validan pero no se almacenan en el sitio.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <span data-icon="admin" data-icon-size="22" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:2px;">Roles y permisos</p>
+            <p style="color:#a8b8cc; font-size:0.85rem;">Las funciones administrativas (Panel Admin, gestión de inventario) están restringidas solo a cuentas con rol de administrador.</p>
+          </div>
+        </div>
+      </div>
+    `;
+    window.UIManager.openModal(content, 'Protección de tu cuenta');
+  }
+
+  function handleFeaturePagosClick() {
+    openCardPaymentPreviewModal();
+  }
+
+  function openCardPaymentPreviewModal() {
+    const content = `
+      <p style="color:#a8b8cc; font-size:0.85rem; margin-bottom:15px;">
+        Vista previa del formulario de pago que verán los clientes al finalizar su compra en el carrito.
+      </p>
+      <form onsubmit="procesarPagoPreview(event)" style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="color: #00D9FF; font-weight: 700;">Nombre en la tarjeta</label>
+          <input type="text" id="preview-card-name" placeholder="Como aparece en la tarjeta" autocomplete="cc-name"
+                 style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="color: #00D9FF; font-weight: 700;">Número de tarjeta</label>
+          <input type="text" id="preview-card-number" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number" maxlength="19"
+                 oninput="formatPreviewCardNumber(this)"
+                 style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <label style="color: #00D9FF; font-weight: 700;">Vencimiento</label>
+            <input type="text" id="preview-card-expiry" placeholder="MM/AA" inputmode="numeric" autocomplete="cc-exp" maxlength="5"
+                   oninput="formatPreviewCardExpiry(this)"
+                   style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <label style="color: #00D9FF; font-weight: 700;">CVV</label>
+            <input type="text" id="preview-card-cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4"
+                   oninput="this.value = this.value.replace(/\\D/g, '')"
+                   style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+          </div>
+        </div>
+
+        <p style="color:#a8b8cc; font-size:0.75rem; display:flex; align-items:center; gap:6px;">
+          <span data-icon="lock" data-icon-size="13"></span> Los datos de la tarjeta no se almacenan.
+        </p>
+
+        <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 4px;">
+          <span data-icon="card" data-icon-size="18"></span> Validar formulario
+        </button>
+      </form>
+    `;
+    window.UIManager.openModal(content, 'Pagos Seguros');
+  }
+
+  function formatPreviewCardNumber(input) {
+    const digits = input.value.replace(/\D/g, '').slice(0, 16);
+    input.value = digits.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function formatPreviewCardExpiry(input) {
+    let digits = input.value.replace(/\D/g, '').slice(0, 4);
+    if (digits.length >= 3) digits = digits.slice(0, 2) + '/' + digits.slice(2);
+    input.value = digits;
+  }
+
+  function procesarPagoPreview(event) {
+    event.preventDefault();
+
+    const nombre = document.getElementById('preview-card-name').value.trim();
+    const numero = document.getElementById('preview-card-number').value.replace(/\s/g, '');
+    const vencimiento = document.getElementById('preview-card-expiry').value.trim();
+    const cvv = document.getElementById('preview-card-cvv').value.trim();
+
+    const faltantes = [];
+    if (!nombre) faltantes.push('Nombre en la tarjeta');
+    if (!numero) faltantes.push('Número de tarjeta');
+    if (!vencimiento) faltantes.push('Vencimiento');
+    if (!cvv) faltantes.push('CVV');
+    if (faltantes.length > 0) {
+      window.UIManager.toast(`Falta completar: ${faltantes.join(', ')}`, 'error');
+      return;
+    }
+
+    if (!/^\d{13,16}$/.test(numero)) {
+      window.UIManager.toast('El número de tarjeta no es válido', 'error');
+      return;
+    }
+
+    const expiryMatch = vencimiento.match(/^(\d{2})\/(\d{2})$/);
+    if (!expiryMatch) {
+      window.UIManager.toast('El vencimiento debe tener el formato MM/AA', 'error');
+      return;
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      window.UIManager.toast('El CVV no es válido', 'error');
+      return;
+    }
+
+    window.UIManager.closeModal();
+    window.UIManager.toast('Formulario validado correctamente (vista previa)', 'success');
+  }
+
+  // ==================== EXPLORAR TIENDA (chip interactivo) ====================
+
+  function openResponsiveQRModal() {
+    const content = `
+      <div style="display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center;">
+        <p style="color:#a8b8cc; font-size:0.9rem;">
+          Escanea este código con tu celular para abrir PaperCraft Systems ahí mismo y comprobar que se ve perfecto en cualquier pantalla.
+        </p>
+        <img src="assets/qr-tienda.png" alt="Código QR para abrir PaperCraft Systems en tu celular"
+             style="width:220px; height:220px; border-radius:12px; border:2px solid #00D9FF; box-shadow:0 0 25px rgba(0,217,255,0.4); background:#fff; padding:10px;">
+        <p style="color:#6b7a90; font-size:0.75rem;">Perfecto en desktop, tablet y móvil.</p>
+      </div>
+    `;
+    window.UIManager.openModal(content, '100% Responsive');
+  }
+
+  function openMasInfoModal() {
+    const content = `
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <p style="color:#00D9FF; font-weight:800; font-size:1.1rem;">PaperCraft Systems</p>
+        <p style="color:#e8ecf1; font-size:0.92rem; line-height:1.6;">
+          Papelería y tecnología, con una tienda que funciona de verdad — no una maqueta.
+        </p>
+
+        <div style="display:flex; gap:12px; align-items:center;">
+          <svg viewBox="0 0 32 26" style="width:56px; height:auto; flex-shrink:0;" shape-rendering="crispEdges">
+            <!-- cola -->
+            <rect x="1" y="10" width="2" height="2" fill="#FF7A1A"/>
+            <rect x="0" y="12" width="2" height="2" fill="#FF7A1A"/>
+            <!-- cuerpo -->
+            <rect x="3" y="8" width="10" height="6" fill="#FF9F3D"/>
+            <rect x="5" y="12" width="6" height="2" fill="#FFF3E0"/>
+            <!-- cabeza -->
+            <rect x="11" y="5" width="7" height="6" fill="#FF9F3D"/>
+            <rect x="13" y="8" width="4" height="2" fill="#FFF3E0"/>
+            <!-- orejas -->
+            <rect x="11" y="3" width="2" height="2" fill="#FF7A1A"/>
+            <rect x="16" y="3" width="2" height="2" fill="#FF7A1A"/>
+            <!-- hocico + ojo -->
+            <rect x="18" y="8" width="2" height="2" fill="#2B1810"/>
+            <rect x="15" y="6" width="1" height="1" fill="#2B1810"/>
+            <!-- patas -->
+            <rect x="4" y="14" width="2" height="3" fill="#2B1810"/>
+            <rect x="10" y="14" width="2" height="3" fill="#2B1810"/>
+            <!-- lupa -->
+            <rect x="19" y="10" width="7" height="7" fill="none" stroke="#00D9FF" stroke-width="2"/>
+            <rect x="25" y="16" width="5" height="2" fill="#00D9FF" transform="rotate(40 25 16)"/>
+          </svg>
+          <p style="color:#39FF14; font-weight:800; font-size:0.95rem;">¿Qué hay detrás del sitio?</p>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start; background: rgba(0,217,255,0.06); border: 1px solid rgba(0,217,255,0.3); border-radius: 10px; padding: 14px;">
+          <span data-icon="lock" data-icon-size="20" style="color:#00D9FF; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#00D9FF; font-weight:700; margin-bottom:4px;">Seguridad real</p>
+            <p style="color:#a8b8cc; font-size:0.85rem; line-height:1.5;">
+              Autenticación con Supabase, contraseñas cifradas, protección contra ataques comunes,
+              límite de intentos de inicio de sesión, y una sola sesión activa por cuenta.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start; background: rgba(57,255,20,0.06); border: 1px solid rgba(57,255,20,0.3); border-radius: 10px; padding: 14px;">
+          <span data-icon="game" data-icon-size="20" style="color:#39FF14; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#39FF14; font-weight:700; margin-bottom:4px;">Juegos con premios de verdad</p>
+            <p style="color:#a8b8cc; font-size:0.85rem; line-height:1.5;">
+              Ruleta, Memoria, Trivia y Dado, con créditos y descuentos que se guardan en la
+              base de datos — no se pierden aunque cambies de dispositivo.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start; background: rgba(255,0,110,0.06); border: 1px solid rgba(255,0,110,0.3); border-radius: 10px; padding: 14px;">
+          <span data-icon="card" data-icon-size="20" style="color:#FF006E; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#FF006E; font-weight:700; margin-bottom:4px;">Facturas automáticas</p>
+            <p style="color:#a8b8cc; font-size:0.85rem; line-height:1.5;">
+              Cada compra genera una factura en PDF con código QR y código de recogida en tienda.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start; background: rgba(178,75,243,0.06); border: 1px solid rgba(178,75,243,0.3); border-radius: 10px; padding: 14px;">
+          <span data-icon="admin" data-icon-size="20" style="color:#B24BF3; flex-shrink:0; margin-top:2px;"></span>
+          <div>
+            <p style="color:#B24BF3; font-weight:700; margin-bottom:4px;">Panel de administrador completo</p>
+            <p style="color:#a8b8cc; font-size:0.85rem; line-height:1.5;">
+              Inventario, pedidos, usuarios y estadísticas, todo conectado en tiempo real.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+    window.UIManager.openModal(content, 'Más Info');
+  }
+
+  function openExploreChipModal() {
+    const items = [
+      { icon: 'card',    label: 'Pagos Seguros',       action: `window.UIManager.closeModal(); handleFeaturePagosClick();` },
+      { icon: 'package', label: 'Vault Gamer',          action: `window.UIManager.closeModal(); handleFeatureProductosClick();` },
+      { icon: 'bag',     label: 'Tienda',               action: `window.location.href = 'shop.html';` },
+      { icon: 'game',    label: 'Juegos Interactivos',  action: `window.UIManager.closeModal(); handleFeatureJuegosClick();` },
+      { icon: 'lock',    label: 'Cuentas Seguras',      action: `window.UIManager.closeModal(); handleFeatureCuentasSegurasClick();` },
+      { icon: 'package', label: '100% Responsive',      action: `window.UIManager.closeModal(); openResponsiveQRModal();` },
+      { icon: 'admin',   label: 'Panel Admin',          action: `window.UIManager.closeModal(); handleFeaturePanelAdminClick();` }
+    ];
+
+    // 7 accesos en círculo alrededor del chip, conectados con SVG (calza exacto en cualquier ángulo)
+    const W = 520, H = 460, CX = 260, CY = 230, R_LINE = 118, R_PIN = 168;
+    const n = items.length;
+
+    let lines = '';
+    let pins = '';
+
+    items.forEach((item, i) => {
+      const angle = (-90 + (360 / n) * i) * Math.PI / 180;
+      const lineX = CX + R_LINE * Math.cos(angle);
+      const lineY = CY + R_LINE * Math.sin(angle);
+      const pinX = CX + R_PIN * Math.cos(angle);
+      const pinY = CY + R_PIN * Math.sin(angle);
+
+      // trazo tipo circuito: sale recto y dobla 90° hacia el pin (no diagonal)
+      const dx = lineX - CX;
+      const dy = lineY - CY;
+      const path = Math.abs(dx) > Math.abs(dy)
+        ? `M ${CX} ${CY} H ${lineX.toFixed(1)} V ${lineY.toFixed(1)}`
+        : `M ${CX} ${CY} V ${lineY.toFixed(1)} H ${lineX.toFixed(1)}`;
+
+      lines += `
+        <path id="spider-line-${i}" d="${path}" fill="none" stroke="#FFB84D" stroke-width="2" opacity="0.55" stroke-linecap="square"/>
+        <circle id="spider-dot-${i}" cx="${lineX.toFixed(1)}" cy="${lineY.toFixed(1)}" r="3.5" fill="#FFB84D"/>
+      `;
+
+      const clickable = !!item.action;
+      const onclickAttr = clickable
+        ? `onclick="fireChipPin(this, ${i}, () => { ${item.action} })"`
+        : '';
+
+      pins += `
+        <button type="button" class="chip-pin chip-pin-horizontal ${clickable ? '' : 'chip-pin-static'}"
+                style="position:absolute; left:${pinX.toFixed(1)}px; top:${pinY.toFixed(1)}px; transform:translate(-50%, -50%);"
+                ${onclickAttr}>
+          <span id="spider-label-${i}" class="chip-pin-label">${Icons.svg(item.icon, { size: 14 })} ${item.label}</span>
+        </button>
+      `;
+    });
+
+    const content = `
+      <p style="color:#a8b8cc; font-size:0.85rem; margin-bottom:16px;">
+        Cada pin del chip es un acceso directo. Toca el centro para ir a la tienda.
+      </p>
+      <div style="position:relative; width:${W}px; max-width:100%; height:${H}px; margin:0 auto;">
+        <svg viewBox="0 0 ${W} ${H}" style="position:absolute; inset:0; width:100%; height:100%; overflow:visible;">
+          ${lines}
+        </svg>
+        <a href="index.html" class="chip-body" id="chip-body-center" onclick="return fireChipCenter(this);"
+           style="position:absolute; left:${CX}px; top:${CY}px; transform:translate(-50%, -50%); width:160px; height:160px; text-decoration:none;">
+          <span data-icon="chip" data-icon-size="42"></span>
+          <p>Inicio</p>
+        </a>
+        ${pins}
+      </div>
+      <p style="color:#6b7a90; font-size:0.7rem; margin-top:10px; text-align:center;">
+        Los nombres y estudios pertenecen a sus respectivos creadores; esta sección solo ofrece información y consejos generales.
+      </p>
+    `;
+    window.UIManager.openModal(content, 'Explorar Tienda');
+  }
+
+  // señal RGB viaja del chip al pin (línea -> punto -> etiqueta), después ejecuta la acción
+  function fireChipPin(pinEl, index, action) {
+    const chipBody = document.getElementById('chip-body-center');
+    const line = document.getElementById(`spider-line-${index}`);
+    const dot = document.getElementById(`spider-dot-${index}`);
+    const label = document.getElementById(`spider-label-${index}`);
+
+    [chipBody, line, dot, label].forEach(el => {
+      if (!el) return;
+      el.classList.remove('chip-signal-center', 'chip-signal-leg', 'chip-signal-dot', 'chip-signal-label');
+      void el.getBoundingClientRect(); // fuerza reflow para poder reiniciar la animación si se hace doble clic
+    });
+
+    if (chipBody) chipBody.classList.add('chip-signal-center');
+    if (line) line.classList.add('chip-signal-leg');
+    if (dot) dot.classList.add('chip-signal-dot');
+    if (label) label.classList.add('chip-signal-label');
+
+    setTimeout(action, 480);
+  }
+
+  // El propio chip central también responde con el mismo pulso RGB antes
+  // de redirigir al inicio.
+  function fireChipCenter(chipEl) {
+    chipEl.classList.remove('chip-signal-center');
+    void chipEl.offsetWidth;
+    chipEl.classList.add('chip-signal-center');
+
+    setTimeout(() => { location.href = chipEl.getAttribute('href'); }, 480);
+    return false;
+  }
+</script>
+
+<!-- Animación de fondo Matrix (independiente, no afecta el resto del sitio) -->
+<script src="js/matrix-rain.js"></script>
+
+</body>
+</html>

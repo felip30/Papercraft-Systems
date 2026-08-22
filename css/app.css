@@ -1,0 +1,678 @@
+/* ════════════════════════════════════════════════════════════════ */
+/* PAPERCRAFT SYSTEMS - ESTILOS PRINCIPALES                        */
+/* ════════════════════════════════════════════════════════════════ */
+
+@import url('./variables.css');
+
+/* ════════════════════════════════════════════════════════════════ */
+/* CONTORNO NEÓN ANIMADO                                             */
+/* El borde y el brillo de los elementos "neón" del sitio (navbar,   */
+/* tarjetas, modal, chips) van rotando de color en un ciclo suave,   */
+/* sin afectar el texto ni los íconos que tengan adentro.            */
+/* ════════════════════════════════════════════════════════════════ */
+
+@keyframes neonCycleBorder {
+  0%   { border-color: #00D9FF; box-shadow: 0 0 20px rgba(0, 217, 255, 0.5); }
+  25%  { border-color: #FF006E; box-shadow: 0 0 20px rgba(255, 0, 110, 0.5); }
+  50%  { border-color: #39FF14; box-shadow: 0 0 20px rgba(57, 255, 20, 0.5); }
+  75%  { border-color: #B24BF3; box-shadow: 0 0 20px rgba(178, 75, 243, 0.5); }
+  100% { border-color: #00D9FF; box-shadow: 0 0 20px rgba(0, 217, 255, 0.5); }
+}
+
+.navbar,
+.game-card,
+.product-card,
+.feature-card,
+.carousel-3d-item-face,
+.stat-card,
+.chip-body,
+#custom-modal > div {
+  animation: neonCycleBorder 10s linear infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* TÍTULO CON COLOR CAMBIANTE                                        */
+/* Mismo ciclo de colores de neonCycleBorder, pero aplicado al color  */
+/* de texto en vez del borde. Se usa en títulos puntuales (ej. "Mi   */
+/* Perfil") sin afectar los demás títulos de modales.                */
+/* ════════════════════════════════════════════════════════════════ */
+
+@keyframes neonCycleText {
+  0%   { color: #00D9FF; }
+  25%  { color: #FF006E; }
+  50%  { color: #39FF14; }
+  75%  { color: #B24BF3; }
+  100% { color: #00D9FF; }
+}
+
+.title-cycle-color {
+  animation: neonCycleText 4s linear infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* SEPARADORES NEÓN DEL NAVBAR                                       */
+/* Barritas verticales entre los enlaces, con el mismo ciclo de      */
+/* colores de arriba pero aplicado al fondo + resplandor.            */
+/* ════════════════════════════════════════════════════════════════ */
+
+@keyframes neonCycleGlowBar {
+  0%   { background: #00D9FF; box-shadow: 0 0 8px #00D9FF, 0 0 14px rgba(0, 217, 255, 0.6); }
+  25%  { background: #FF006E; box-shadow: 0 0 8px #FF006E, 0 0 14px rgba(255, 0, 110, 0.6); }
+  50%  { background: #39FF14; box-shadow: 0 0 8px #39FF14, 0 0 14px rgba(57, 255, 20, 0.6); }
+  75%  { background: #B24BF3; box-shadow: 0 0 8px #B24BF3, 0 0 14px rgba(178, 75, 243, 0.6); }
+  100% { background: #00D9FF; box-shadow: 0 0 8px #00D9FF, 0 0 14px rgba(0, 217, 255, 0.6); }
+}
+
+.nav-sep {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  border-radius: 2px;
+  animation: neonCycleGlowBar 4s linear infinite;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* NAVBAR Y BOTONES GLOBALES                                        */
+/* Centralizado aquí para que TODAS las páginas (incluyendo las de  */
+/* /pages) tengan el mismo espaciado. Antes cada página duplicaba   */
+/* estas reglas en su propio <style>, y las páginas de /pages       */
+/* nunca las recibían, causando botones pegados/superpuestos en la  */
+/* barra de navegación.                                             */
+/* ════════════════════════════════════════════════════════════════ */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 20px 5%;
+  background: rgba(10, 14, 39, 0.95);
+  border-bottom: 2px solid var(--cyan);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--cyan), var(--magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-spacer { flex: 1; }
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: var(--gris-50);
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nav-links a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+
+.navbar-auth-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--cyan), var(--azul-neon));
+  color: var(--gris-900);
+  border: 2px solid var(--cyan);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+  font-family: var(--font-sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn:hover { box-shadow: 0 0 40px rgba(0, 217, 255, 0.8); transform: translateY(-2px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-logout { background: linear-gradient(135deg, var(--magenta), #cc0055) !important; border-color: var(--magenta) !important; color: #fff !important; }
+.btn-logout:hover { box-shadow: 0 0 40px rgba(255, 0, 110, 0.8) !important; }
+.btn-danger { background: linear-gradient(135deg, var(--magenta), #cc0055); border-color: var(--magenta); color: #fff; }
+.btn-danger:hover { box-shadow: 0 0 40px rgba(255, 0, 110, 0.8); }
+.btn-success { background: linear-gradient(135deg, var(--verde-neon), var(--cyan)); border-color: var(--verde-neon); color: var(--gris-900); }
+.btn-success:hover { box-shadow: 0 0 40px rgba(57, 255, 20, 0.8); }
+
+/* Grupos de botones de acción: separación consistente para que nunca
+   queden pegados o se superpongan, sin importar el ancho del contenedor. */
+.btn-group,
+.product-actions,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--magenta);
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(10, 14, 39, 0.98);
+    border-bottom: 2px solid var(--cyan);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    padding: 8px 5%;
+  }
+  .nav-links.nav-links-open { display: flex; }
+  .nav-links a {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.15);
+    width: 100%;
+  }
+  .nav-links a:last-child { border-bottom: none; }
+  .nav-hamburger { display: flex !important; }
+  .navbar-auth-section { flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
+  .nav-sep { display: none; }
+}
+
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.nav-hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--cyan);
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.25s;
+}
+.nav-hamburger.nav-hamburger-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.nav-hamburger-open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.nav-hamburger-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ════════════════════════════════════════════════════════════════ */
+/* PÁGINA DE TIENDA                                                 */
+/* ════════════════════════════════════════════════════════════════ */
+
+.shop-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+.shop-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.shop-header h1 {
+  color: var(--primary-700);
+  margin-bottom: 10px;
+}
+
+.shop-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: var(--gris-50);
+  border-radius: var(--r-lg);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--gris-700);
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 8px 12px;
+  border: 1.5px solid var(--gris-300);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.product-card {
+  background: #fff;
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  box-shadow: var(--sombra-sm);
+}
+
+.product-card:hover {
+  border-color: var(--primary-300);
+  box-shadow: var(--sombra-lg);
+  transform: translateY(-8px);
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--primary-100), var(--secondary-100));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  overflow: hidden;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--gris-900);
+  margin-bottom: 8px;
+  line-height: 1.3;
+  min-height: 40px;
+}
+
+.product-category {
+  font-size: var(--text-xs);
+  color: var(--primary-600);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.product-rating {
+  font-size: var(--text-xs);
+  color: var(--gris-600);
+  margin-bottom: 10px;
+}
+
+.product-price {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: 12px;
+}
+
+.product-price .original {
+  text-decoration: line-through;
+  color: var(--gris-500);
+  font-size: var(--text-sm);
+  margin-right: 8px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.product-actions .btn {
+  flex: 1;
+  padding: 8px;
+  font-size: var(--text-xs);
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* PÁGINA DE CARRITO                                                */
+/* ════════════════════════════════════════════════════════════════ */
+
+.cart-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+.cart-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.cart-header h1 {
+  color: var(--primary-700);
+}
+
+.cart-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.cart-items {
+  background: #fff;
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--gris-100);
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  background: var(--primary-50);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.cart-item-price {
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: 10px;
+}
+
+.cart-item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+}
+
+.cart-item-quantity button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--gris-300);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  background: var(--gris-50);
+  font-weight: 700;
+}
+
+.cart-remove {
+  color: #dc2626;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cart-summary {
+  background: var(--primary-50);
+  border: 1.5px solid var(--primary-200);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  height: fit-content;
+}
+
+.cart-summary h3 {
+  margin-bottom: 15px;
+  color: var(--primary-700);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: var(--text-sm);
+  border-bottom: 1px solid var(--primary-200);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--primary-700);
+  padding-top: 15px;
+  padding-bottom: 0;
+}
+
+.coupon-input {
+  width: 100%;
+  padding: 8px;
+  border: 1.5px solid var(--gris-300);
+  border-radius: var(--r-md);
+  font-size: var(--text-sm);
+  margin-bottom: 10px;
+}
+
+.checkout-btn {
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* PÁGINA ADMIN                                                     */
+/* ════════════════════════════════════════════════════════════════ */
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+.admin-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--primary-50), var(--secondary-50));
+  border: 1.5px solid var(--primary-200);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card .icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.stat-card .value {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--primary-700);
+  margin-bottom: 5px;
+}
+
+.stat-card .label {
+  font-size: var(--text-sm);
+  color: var(--gris-600);
+}
+
+.admin-table {
+  background: #fff;
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.admin-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: var(--gris-100);
+  padding: 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--gris-900);
+  border-bottom: 2px solid var(--gris-200);
+}
+
+.admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.admin-table tr:hover {
+  background: var(--gris-50);
+}
+
+.admin-table .action-btn {
+  padding: 6px 12px;
+  font-size: var(--text-xs);
+  margin-right: 5px;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* JUEGOS                                                           */
+/* ════════════════════════════════════════════════════════════════ */
+
+.games-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.game-card {
+  background: linear-gradient(135deg, var(--primary-100), var(--secondary-100));
+  border-radius: var(--r-lg);
+  padding: 30px;
+  text-align: center;
+  box-shadow: var(--sombra-lg);
+  transition: all var(--transition-normal);
+}
+
+.game-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--sombra-xl);
+}
+
+.game-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.game-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--primary-700);
+  margin-bottom: 10px;
+}
+
+.game-description {
+  font-size: var(--text-sm);
+  color: var(--gris-700);
+  margin-bottom: 20px;
+}
+
+/* ════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE                                                       */
+/* ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .cart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    margin-top: 20px;
+  }
+
+  .admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-filters {
+    grid-template-columns: 1fr;
+  }
+}

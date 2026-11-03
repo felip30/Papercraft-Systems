@@ -257,12 +257,20 @@ const GamesController = {
     }
 
     const wheel = document.getElementById('wheelRuleta');
+    if (!window.crypto?.getRandomValues) {
+      window.UIManager.toast('Tu navegador no permite generar un giro seguro. Actualízalo e intenta de nuevo.', 'error');
+      return;
+    }
+
+    const randomValues = new Uint32Array(2);
+    window.crypto.getRandomValues(randomValues);
+    const vueltasCompletas = (randomValues[0] % 4) + 6; // 6 a 9 vueltas
+    const anguloParadaAleatorio = (randomValues[1] / 0x100000000) * 360;
+
     btn.disabled = true;
     document.getElementById('resultadoRuleta').textContent = '';
 
     // rotación acumulada para que siempre gire hacia adelante
-    const vueltasCompletas = Math.floor(Math.random() * 4) + 6; // 6 a 9 vueltas
-    const anguloParadaAleatorio = Math.random() * 360;
     this.ruletaRotationAcumulada += (360 * vueltasCompletas) + anguloParadaAleatorio;
 
     wheel.style.transform = `rotate(${this.ruletaRotationAcumulada}deg)`;

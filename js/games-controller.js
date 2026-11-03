@@ -30,6 +30,25 @@ const MAX_TRIVIA_POR_DIA = 3;
 const MAX_DADO_POR_DIA = 5;
 const MEMORY_ICON_KEYS = ['palette', 'drama', 'tent', 'film', 'target', 'dice', 'bowling', 'gamepad'];
 
+function secureRandomInt(maxExclusive) {
+  const cryptoApi = window.crypto;
+  if (!cryptoApi?.getRandomValues) {
+    throw new Error('Tu navegador no permite generar números aleatorios seguros.');
+  }
+
+  const range = 0x100000000;
+  const limit = Math.floor(range / maxExclusive) * maxExclusive;
+  const values = new Uint32Array(1);
+  let value;
+
+  do {
+    cryptoApi.getRandomValues(values);
+    value = values[0];
+  } while (value >= limit);
+
+  return value % maxExclusive;
+}
+
 const TRIVIA_PREGUNTAS = [
   { pregunta: '¿Cuál es el metal más abundante en la corteza terrestre?', opciones: ['Hierro', 'Aluminio', 'Cobre', 'Oro'], correcta: 1 },
   { pregunta: '¿Cuántos huesos tiene el cuerpo humano adulto?', opciones: ['186', '206', '226', '246'], correcta: 1 },
@@ -374,10 +393,16 @@ const GamesController = {
   resetMemoria() {
     const grid = document.getElementById('gridMemoria');
     const iconKeys = [...MEMORY_ICON_KEYS, ...MEMORY_ICON_KEYS];
-    const shuffled = iconKeys
-      .map(key => ({ key, sort: Math.random() }))
-      .sort((a, b) => a.sort - b.sort)
-      .map(item => item.key);
+    const shuffled = [...iconKeys];
+    try {
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = secureRandomInt(i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+    } catch (err) {
+      window.UIManager.toast(err.message, 'error');
+      return;
+    }
 
     this.memoria.intentos = 0;
     this.memoria.aciertos = 0;
@@ -638,12 +663,22 @@ const GamesController = {
       return;
     }
 
+    let animacionResultados;
+    let resultado;
+    try {
+      animacionResultados = Array.from({ length: 12 }, () => secureRandomInt(6) + 1);
+      resultado = secureRandomInt(6) + 1;
+    } catch (err) {
+      window.UIManager.toast(err.message, 'error');
+      return;
+    }
+
     btn.disabled = true;
     const cara = document.getElementById('dadoCara');
     let vueltas = 0;
 
     const animacion = setInterval(() => {
-      cara.textContent = String(Math.floor(Math.random() * 6) + 1);
+      cara.textContent = String(animacionResultados[vueltas]);
       vueltas++;
       if (vueltas >= 12) {
         clearInterval(animacion);
@@ -657,7 +692,6 @@ const GamesController = {
             return;
           }
 
-          const resultado = Math.floor(Math.random() * 6) + 1;
           cara.textContent = String(resultado);
           const creditosGanados = resultado * 10;
 

@@ -239,7 +239,22 @@ class AuthManager {
   // identificador ya no coincide con el de la base de datos.
   async claimSession() {
     if (!this.profile) return;
-    const sessionId = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+
+    let sessionId;
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      sessionId = crypto.randomUUID();
+    } else if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+      const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+      sessionId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    } else {
+      throw new Error('Web Crypto API no disponible: no se puede generar una sesión segura.');
+    }
+
     localStorage.setItem('papercraft_session_id', sessionId);
 
     const { error } = await window.supabaseClient

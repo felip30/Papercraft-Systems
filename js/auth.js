@@ -17,8 +17,8 @@ class AuthManager {
     this.isAuthenticated = false;
     this.profile = null;       // fila completa de la tabla "usuarios"
 
-    // hay que esperar ready() antes de leer el estado de sesión (es async)
-    this._readyPromise = this._initSession();
+      // la sesión se carga la primera vez que se llama a ready() (no en el constructor)
+    this._readyPromise = null;
 
     // si se cierra sesión en otra pestaña, sincronizar acá también
     window.supabaseClient.auth.onAuthStateChange((event) => {
@@ -31,7 +31,8 @@ class AuthManager {
     });
   }
 
-  async ready() {
+  ready() {
+    if (!this._readyPromise) this._readyPromise = this._initSession();
     return this._readyPromise;
   }
 

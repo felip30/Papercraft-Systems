@@ -13,13 +13,16 @@ class DataManager {
     this.discounts = [];
     this.vaultGames = [];
 
-    // Las páginas deben esperar este promise (await window.DataManager.ready())
-    // antes de usar cualquier getter por primera vez.
-    this._readyPromise = this._initAll();
+    // los datos se cargan la primera vez que se llama a ready() (no en el constructor)
+    this._readyPromise = null;
 
-    // Si el usuario inicia o cierra sesión mientras la página ya está
-    // cargada (por ejemplo, tras loguearse desde un modal), se refrescan
-    // los datos que dependen de quién está logueado.
+    this._escucharCambiosDeSesion();
+  }
+
+  // Si el usuario inicia o cierra sesión mientras la página ya está
+  // cargada (por ejemplo, tras loguearse desde un modal), se refrescan
+  // los datos que dependen de quién está logueado.
+  _escucharCambiosDeSesion() {
     window.addEventListener('userLoggedIn', () => {
       this.loadOrdersFromSupabase();
       this.loadGameScoresFromSupabase();
@@ -32,7 +35,10 @@ class DataManager {
     });
   }
 
-  async ready() {
+  ready() {
+    if (!this._readyPromise) {
+      this._readyPromise = this._initAll();
+    }
     return this._readyPromise;
   }
 
@@ -1119,4 +1125,3 @@ class DataManager {
 
 // Global instance
 window.DataManager = new DataManager();
-

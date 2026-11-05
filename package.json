@@ -1,0 +1,27 @@
+{
+  "name": "papercraft-systems",
+  "version": "1.0.0",
+  "description": "PaperCraft Systems - E-commerce Cyberpunk con panel de admin, juegos y Supabase",
+  "main": "js/dataManager.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:unit": "vitest",
+    "test:e2e": "playwright test",
+    "test:load": "k6 run tests/load/k6_load_test.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "jsdom": "^24.0.0",
+    "vitest": "^5.0.0"
+  },
+  "keywords": [
+    "ecommerce",
+    "papercraft",
+    "cyberpunk",
+    "supabase",
+    "testing"
+  ],
+  "author": "PaperCraft Systems",
+  "license": "ISC"
+}

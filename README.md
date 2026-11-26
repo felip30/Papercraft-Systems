@@ -5,7 +5,7 @@ descuentos, y un sistema de cuentas real — todo conectado a una base de
 datos en la nube (Supabase), no a datos falsos guardados en el navegador.
 
 ## Tecnologías utilizadas
-- HTML5, CSS3 (tema neón/cyberpunk), JavaScript (Vanilla, sin frameworks ni build)
+- HTML5, CSS3 (tema neón/cyberpunk), JavaScript 
 - Supabase: base de datos (Postgres), autenticación, Storage (fotos de perfil)
 - jsPDF: generación de comprobantes de pago y de cancelación en PDF
 

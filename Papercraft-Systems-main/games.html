@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juegos - PaperCraft Systems</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
+       modal bloquea el scroll (position: fixed en body), se asoma el
+       blanco por defecto del navegador en el hueco que queda */
+    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
+       transparente y la lluvia de números (z-index: -1) se sigue viendo
+       por delante del fondo, en vez de quedar tapada */
+    html {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
+    }
+    body {
+      background: transparent;
+      color: #e8ecf1;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 5%; }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #00D9FF, #FF006E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .game-card {
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+      cursor: pointer;
+    }
+
+    .game-card:hover {
+      border-color: #FF006E;
+      box-shadow: 0 0 40px rgba(255, 0, 110, 0.5);
+      transform: translateY(-10px);
+    }
+
+    .game-header {
+      background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00D9FF;
+    }
+
+    .game-info { padding: 30px; }
+
+    .game-title { color: #00D9FF; font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .game-desc { color: #a8b8cc; margin-bottom: 12px; line-height: 1.6; }
+    .game-reward { color: #39FF14; font-weight: 900; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .game-limit { color: #a8b8cc; font-size: 0.85rem; margin-bottom: 20px; }
+
+    .game-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #39FF14, #00D9FF);
+      color: #0a0e27;
+      border: 2px solid #39FF14;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .game-btn:hover { box-shadow: 0 0 30px rgba(57, 255, 20, 0.8); }
+    .game-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+      padding: 20px;
+    }
+
+    .modal.active { display: flex; }
+
+    .modal-content {
+      background: rgba(10, 14, 39, 0.95);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 0 40px rgba(0, 217, 255, 0.5);
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-title {
+      color: #00D9FF;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #FF006E;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
+      perspective: 1000px;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #FF006E 0deg 60deg,
+        #00D9FF 60deg 120deg,
+        #39FF14 120deg 180deg,
+        #0066FF 180deg 240deg,
+        #FF006E 240deg 300deg,
+        #00D9FF 300deg 360deg
+      );
+      border: 3px solid #e8ecf1;
+      box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+      transition: transform 4.2s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .spins-remaining {
+      color: #a8b8cc;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .spins-remaining strong { color: #39FF14; }
+
+    .mis-puntajes {
+      margin-top: 50px;
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #39FF14;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+    }
+
+    .mis-puntajes h2 {
+      color: #39FF14;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      background: none;
+      -webkit-text-fill-color: #39FF14;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mis-puntajes table { width: 100%; border-collapse: collapse; }
+
+    .mis-puntajes th {
+      text-align: left;
+      color: #39FF14;
+      padding: 10px;
+      border-bottom: 2px solid #39FF14;
+      font-size: 0.85rem;
+    }
+
+    .mis-puntajes td {
+      padding: 10px;
+      border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+      font-size: 0.85rem;
+      color: #e8ecf1;
+    }
+
+    .mis-descuentos {
+      margin-top: 30px;
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .mis-descuentos h2 {
+      color: #00D9FF;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .discount-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(57, 255, 20, 0.1);
+      border: 1px solid #39FF14;
+      color: #39FF14;
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin: 0 10px 10px 0;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .memoria-timer {
+      color: #00D9FF;
+      font-weight: 900;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .wheel-text {
+      position: absolute;
+      font-weight: 900;
+      color: #0a0e27;
+      font-size: 14px;
+      width: 40px;
+      text-align: center;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 25px solid #39FF14;
+      z-index: 10;
+      filter: drop-shadow(0 0 10px rgba(57, 255, 20, 0.8));
+    }
+
+    .memory-card {
+      width: 60px;
+      height: 60px;
+      background: #00D9FF;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a0e27;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .memory-card:hover { transform: translateY(-2px); }
+    .memory-card.is-flipped { background: #39FF14; }
+    .memory-card.is-matched { background: #0066FF; color: #e8ecf1; cursor: default; }
+
+    footer {
+      background: rgba(10, 14, 39, 0.95);
+      border-top: 2px solid #00D9FF;
+      padding: 40px 5%;
+      text-align: center;
+      color: #a8b8cc;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 1.6rem; }
+      .nav-links { display: none; }
+      .games-grid { grid-template-columns: 1fr; }
+      .wheel-container { width: 250px; height: 250px; }
+    }
+  
+    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
+       muestra apenas arranca la página y se oculta solo cuando los datos
+       ya están listos para mostrarse. */
+    #pageLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #0a0e27;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      transition: opacity 0.35s ease;
+    }
+    #pageLoader.page-loader-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .page-loader-ring-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid rgba(0, 217, 255, 0.15);
+      border-top-color: #00D9FF;
+      border-right-color: #FF006E;
+      animation: pageLoaderSpin 1s linear infinite;
+    }
+    .page-loader-fox {
+      width: 56px;
+      height: auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
+    }
+    @keyframes pageLoaderSpin {
+      to { transform: rotate(360deg); }
+    }
+    .page-loader-text {
+      color: #a8b8cc;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .page-loader-ring { animation: none; }
+    }
+
+  </style>
+</head>
+<body>
+<div id="pageLoader">
+  <div class="page-loader-ring-wrap">
+    <div class="page-loader-ring"></div>
+    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
+      <!-- cola enroscada al frente -->
+      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
+      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
+      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
+      <!-- cuerpo sentado (más ancho abajo) -->
+      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
+      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
+      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
+      <!-- cabeza -->
+      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
+      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
+      <!-- orejas -->
+      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <!-- ojos cerrados (esperando tranquilo) -->
+      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
+      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
+      <!-- hocico -->
+      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
+      <!-- patas delanteras -->
+      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
+      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
+    </svg>
+  </div>
+  <p class="page-loader-text">Cargando...</p>
+</div>
+<script>
+  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
+  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
+  // carga para siempre.
+  setTimeout(() => {
+    const el = document.getElementById('pageLoader');
+    if (el) el.classList.add('page-loader-hidden');
+  }, 8000);
+</script>
+
+
+
+<nav class="navbar">
+  <div class="nav-brand" onclick="location.href='index.html'">
+    <span data-icon="store" data-icon-size="22"></span> PaperCraft
+  </div>
+  <div class="nav-spacer"></div>
+  <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html"><span data-icon="home" data-icon-size="16"></span> Inicio</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="shop.html"><span data-icon="bag" data-icon-size="16"></span> Tienda</a>
+    <span class="nav-sep" data-auth-only aria-hidden="true" style="display:none;"></span>
+    <a href="cart.html" data-auth-only style="display:none;"><span data-icon="cart" data-icon-size="16"></span> Carrito</a>
+    <span class="nav-sep" data-auth-only aria-hidden="true" style="display:none;"></span>
+    <a href="#" data-auth-only style="display:none;" onclick="openProfileModal(); return false;"><span data-icon="user" data-icon-size="16"></span> Mi Perfil</a>
+    <span class="nav-sep" data-admin-only aria-hidden="true" style="display:none;"></span>
+    <a href="admin.html" data-admin-only style="display:none;"><span data-icon="admin" data-icon-size="16"></span> Panel Admin</a>
+  </div>
+  <div class="navbar-auth-section">
+    <!-- Se completa con JavaScript -->
+  </div>
+</nav>
+
+<div class="container">
+  <h1><span data-icon="game" data-icon-size="34"></span> Zona de Juegos</h1>
+
+  <div id="vetoJuegosBanner" style="display:none; text-align:center; padding:16px 20px; margin-bottom:20px; background:rgba(255,0,110,0.08); border:1px solid #FF006E; border-radius:10px;">
+    <p id="vetoJuegosMensaje" style="color:#FF006E; font-weight:700; margin-bottom:4px;"></p>
+    <p style="color:#a8b8cc; font-size:0.85rem;">Tu cuenta acumuló 3 cancelaciones tardías y por eso no puede jugar durante este tiempo.</p>
+  </div>
+
+  <div class="games-grid">
+    <div class="game-card" onclick="playRuleta()">
+      <div class="game-header"><span data-icon="wheel" data-icon-size="64"></span></div>
+      <div class="game-info">
+        <div class="game-title"><span data-icon="wheel" data-icon-size="20"></span> Ruleta de Descuentos</div>
+        <div class="game-desc">Gira la rueda y gana descuentos de 5% a 50%</div>
+        <div class="game-reward"><span data-icon="gift" data-icon-size="18"></span> Máx. descuento: 50%</div>
+        <div class="game-limit" id="ruletaLimitLabel">Giros disponibles hoy: <strong id="ruletaLimitValue">3</strong></div>
+        <button class="game-btn"><span data-icon="wheel" data-icon-size="18"></span> Jugar</button>
+      </div>
+    </div>
+
+    <div class="game-card" onclick="playMemoria()">
+      <div class="game-header"><span data-icon="brain" data-icon-size="64"></span></div>
+      <div class="game-info">
+        <div class="game-title"><span data-icon="brain" data-icon-size="20"></span> Juego de Memoria</div>
+        <div class="game-desc">Encuentra todos los pares en el menor tiempo</div>
+        <div class="game-reward"><span data-icon="card" data-icon-size="18"></span> Gana créditos: hasta 300</div>
+        <div class="game-limit">Intentos disponibles hoy: <strong id="memoriaLimitValue">5</strong></div>
+        <button class="game-btn"><span data-icon="game" data-icon-size="18"></span> Jugar</button>
+      </div>
+    </div>
+
+    <div class="game-card" onclick="playTrivia()">
+      <div class="game-header"><span data-icon="chat" data-icon-size="64"></span></div>
+      <div class="game-info">
+        <div class="game-title"><span data-icon="chat" data-icon-size="20"></span> Trivia PaperCraft</div>
+        <div class="game-desc">Responde 5 preguntas de cultura general</div>
+        <div class="game-reward"><span data-icon="card" data-icon-size="18"></span> Gana créditos: hasta 100</div>
+        <div class="game-limit">Partidas disponibles hoy: <strong id="triviaLimitValue">3</strong></div>
+        <button class="game-btn"><span data-icon="chat" data-icon-size="18"></span> Jugar</button>
+      </div>
+    </div>
+
+    <div class="game-card" onclick="playDado()">
+      <div class="game-header"><span data-icon="dice" data-icon-size="64"></span></div>
+      <div class="game-info">
+        <div class="game-title"><span data-icon="dice" data-icon-size="20"></span> Dado de la Suerte</div>
+        <div class="game-desc">Lanza el dado y gana créditos según el número</div>
+        <div class="game-reward"><span data-icon="card" data-icon-size="18"></span> Gana créditos: hasta 60</div>
+        <div class="game-limit">Tiradas disponibles hoy: <strong id="dadoLimitValue">5</strong></div>
+        <button class="game-btn"><span data-icon="dice" data-icon-size="18"></span> Jugar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mis-descuentos" id="misDescuentosSection" style="display:none;">
+    <h2><span data-icon="tag" data-icon-size="20"></span> Mis Descuentos Disponibles</h2>
+    <div id="misDescuentosList"></div>
+    <p style="color:#a8b8cc; font-size:0.85rem; margin-top:5px;">Usa el código en tu carrito para aplicar el descuento en la compra.</p>
+  </div>
+
+  <div class="mis-puntajes" id="misPuntajesSection" style="display:none;">
+    <h2><span data-icon="trophy" data-icon-size="20"></span> Mis Puntajes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Juego</th>
+          <th>Resultado</th>
+          <th>Premio</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="misPuntajesTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL RULETA -->
+<div id="modalsRuleta" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('ruleta')"><span data-icon="close" data-icon-size="26"></span></button>
+    <h2 class="modal-title"><span data-icon="wheel" data-icon-size="22"></span> Ruleta de Descuentos</h2>
+
+    <p class="spins-remaining">Giros disponibles hoy: <strong id="spinsRemainingText">3</strong></p>
+
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="wheelRuleta">
+        <div class="wheel-text" style="transform: rotate(30deg) translateY(-120px);">50%</div>
+        <div class="wheel-text" style="transform: rotate(90deg) translateY(-120px);">20%</div>
+        <div class="wheel-text" style="transform: rotate(150deg) translateY(-120px);">15%</div>
+        <div class="wheel-text" style="transform: rotate(210deg) translateY(-120px);">10%</div>
+        <div class="wheel-text" style="transform: rotate(270deg) translateY(-120px);">30%</div>
+        <div class="wheel-text" style="transform: rotate(330deg) translateY(-120px);">5%</div>
+      </div>
+    </div>
+
+    <button onclick="girarRuleta()" class="game-btn" id="btn-girar" style="margin: 20px 0;">
+      <span data-icon="refresh" data-icon-size="18"></span> Girar Ruleta
+    </button>
+    <p id="resultadoRuleta" style="color: #39FF14; font-weight: 900; margin-top: 20px; font-size: 1.3rem;"></p>
+  </div>
+</div>
+
+<!-- MODAL MEMORIA -->
+<div id="modalsMemoria" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('memoria')"><span data-icon="close" data-icon-size="26"></span></button>
+    <h2 class="modal-title"><span data-icon="brain" data-icon-size="22"></span> Juego de Memoria</h2>
+    <div class="memoria-timer"><span data-icon="clock" data-icon-size="18"></span> Tiempo: <span id="memoriaTimerValue">0</span>s</div>
+    <div id="gridMemoria" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0;"></div>
+    <button onclick="resetMemoria()" class="game-btn">
+      <span data-icon="refresh" data-icon-size="18"></span> Reiniciar
+    </button>
+    <p id="resultadoMemoria" style="color: #39FF14; font-weight: 900; margin-top: 20px;"></p>
+  </div>
+</div>
+
+<!-- MODAL TRIVIA -->
+<div id="modalsTrivia" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('trivia')"><span data-icon="close" data-icon-size="26"></span></button>
+    <h2 class="modal-title"><span data-icon="chat" data-icon-size="22"></span> Trivia PaperCraft</h2>
+    <p id="triviaContador" style="color:#a8b8cc; font-size:0.9rem; margin-bottom:15px;"></p>
+    <div id="triviaPregunta"></div>
+    <p id="resultadoTrivia" style="color: #39FF14; font-weight: 900; margin-top: 20px;"></p>
+  </div>
+</div>
+
+<!-- MODAL DADO -->
+<div id="modalsDado" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('dado')"><span data-icon="close" data-icon-size="26"></span></button>
+    <h2 class="modal-title"><span data-icon="dice" data-icon-size="22"></span> Dado de la Suerte</h2>
+    <p class="spins-remaining">Tiradas disponibles hoy: <strong id="dadoRestantesText">5</strong></p>
+    <div id="dadoCara" style="width:100px; height:100px; margin:20px auto; background:#1a1a3e; border:3px solid #39FF14; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:900; color:#39FF14;">?</div>
+    <button onclick="lanzarDado()" class="game-btn" id="btn-lanzar-dado">
+      <span data-icon="dice" data-icon-size="18"></span> Lanzar Dado
+    </button>
+    <p id="resultadoDado" style="color: #39FF14; font-weight: 900; margin-top: 20px; font-size: 1.2rem;"></p>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 PaperCraft Systems &mdash; Diseña, construye, domina.</p>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="js/utils/icons.js"></script>
+<script src="js/utils/currency.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/invoice.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dataManager.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/games-controller.js"></script>
+
+<script>
+  window.addEventListener('load', async () => {
+    await Promise.all([window.AuthManager.ready(), window.DataManager.ready()]);
+    const _pageLoader = document.getElementById('pageLoader');
+    if (_pageLoader) _pageLoader.classList.add('page-loader-hidden');
+    window.UIManager.updateUIByRole();
+    GamesController.init();
+  });
+</script>
+
+</body>
+</html>

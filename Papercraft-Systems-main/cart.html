@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito - PaperCraft Systems</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
+       modal bloquea el scroll (position: fixed en body), se asoma el
+       blanco por defecto del navegador en el hueco que queda */
+    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
+       transparente y la lluvia de números (z-index: -1) se sigue viendo
+       por delante del fondo, en vez de quedar tapada */
+    html {
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
+    }
+    body {
+      background: transparent;
+      color: #e8ecf1;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 5%;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #00D9FF, #FF006E);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cart-grid {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 30px;
+    }
+
+    .cart-items {
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #00D9FF;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #a8b8cc;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(15, 24, 41, 0.6);
+      border: 1px solid #00D9FF;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+
+    .item-image { font-size: 40px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+    .item-info { flex: 1; }
+    .item-name { color: #00D9FF; font-weight: 700; margin-bottom: 5px; }
+    .item-price { color: #39FF14; font-weight: 900; }
+
+    .item-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .qty-btn {
+      background: rgba(0, 217, 255, 0.2);
+      color: #00D9FF;
+      border: 1px solid #00D9FF;
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+
+    .qty-btn:hover {
+      background: #00D9FF;
+      color: #0a0e27;
+    }
+
+    .qty-input {
+      width: 50px;
+      background: rgba(15, 24, 41, 0.8);
+      border: 1px solid #00D9FF;
+      color: #00D9FF;
+      text-align: center;
+      border-radius: 4px;
+      padding: 5px;
+    }
+
+    .remove-btn {
+      background: rgba(255, 0, 110, 0.2);
+      color: #FF006E;
+      border: 1px solid #FF006E;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+
+    .remove-btn:hover {
+      background: #FF006E;
+      color: #0a0e27;
+    }
+
+    .cart-summary {
+      background: rgba(26, 26, 62, 0.6);
+      border: 2px solid #FF006E;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(255, 0, 110, 0.2);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .summary-title {
+      color: #FF006E;
+      font-weight: 900;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    }
+
+    .summary-row:last-of-type {
+      border-bottom: 2px solid #FF006E;
+      font-weight: 900;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+    }
+
+    .summary-label { color: #a8b8cc; }
+    .summary-value { color: #00D9FF; font-weight: 700; }
+    .summary-row:last-of-type .summary-value { color: #FF006E; font-size: 1.2rem; }
+
+    .coupon-section {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .coupon-input {
+      flex: 1;
+      padding: 10px;
+      background: rgba(15, 24, 41, 0.8);
+      border: 1px solid #00D9FF;
+      color: #e8ecf1;
+      border-radius: 6px;
+    }
+
+    .coupon-btn {
+      padding: 10px 15px;
+      background: #39FF14;
+      color: #0a0e27;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+    }
+
+    .coupon-btn:hover {
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+
+    /* TOGGLE "Recoger en tienda" */
+    .pickup-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      background: rgba(0, 217, 255, 0.06);
+      border: 1px solid #00D9FF;
+      border-radius: 8px;
+    }
+    .pickup-toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #a8b8cc;
+      font-size: 0.85rem;
+    }
+    .pickup-switch {
+      position: relative;
+      width: 46px;
+      height: 24px;
+      border-radius: 20px;
+      background: rgba(168, 184, 204, 0.25);
+      border: 1px solid #a8b8cc;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.25s;
+      padding: 0;
+    }
+    .pickup-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #a8b8cc;
+      transition: all 0.25s;
+    }
+    .pickup-switch.active {
+      background: rgba(57, 255, 20, 0.25);
+      border-color: #39FF14;
+      box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+    .pickup-switch.active::after {
+      left: 24px;
+      background: #39FF14;
+      box-shadow: 0 0 6px #39FF14;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #39FF14, #00D9FF);
+      color: #0a0e27;
+      border: 2px solid #39FF14;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+
+    .checkout-btn:hover {
+      box-shadow: 0 0 40px rgba(57, 255, 20, 0.8);
+      transform: scale(1.02);
+    }
+
+    .checkout-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    footer {
+      background: rgba(10, 14, 39, 0.95);
+      border-top: 2px solid #00D9FF;
+      padding: 40px 5%;
+      text-align: center;
+      color: #a8b8cc;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .cart-grid {
+        grid-template-columns: 1fr;
+      }
+      .cart-summary {
+        position: static;
+      }
+      .cart-item {
+        flex-direction: column;
+      }
+      .nav-links { display: none; }
+    }
+  
+    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
+       muestra apenas arranca la página y se oculta solo cuando los datos
+       ya están listos para mostrarse. */
+    #pageLoader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #0a0e27;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      transition: opacity 0.35s ease;
+    }
+    #pageLoader.page-loader-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .page-loader-ring-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid rgba(0, 217, 255, 0.15);
+      border-top-color: #00D9FF;
+      border-right-color: #FF006E;
+      animation: pageLoaderSpin 1s linear infinite;
+    }
+    .page-loader-fox {
+      width: 56px;
+      height: auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
+    }
+    @keyframes pageLoaderSpin {
+      to { transform: rotate(360deg); }
+    }
+    .page-loader-text {
+      color: #a8b8cc;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .page-loader-ring { animation: none; }
+    }
+
+  </style>
+</head>
+<body>
+<div id="pageLoader">
+  <div class="page-loader-ring-wrap">
+    <div class="page-loader-ring"></div>
+    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
+      <!-- cola enroscada al frente -->
+      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
+      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
+      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
+      <!-- cuerpo sentado (más ancho abajo) -->
+      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
+      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
+      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
+      <!-- cabeza -->
+      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
+      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
+      <!-- orejas -->
+      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
+      <!-- ojos cerrados (esperando tranquilo) -->
+      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
+      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
+      <!-- hocico -->
+      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
+      <!-- patas delanteras -->
+      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
+      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
+    </svg>
+  </div>
+  <p class="page-loader-text">Cargando...</p>
+</div>
+<script>
+  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
+  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
+  // carga para siempre.
+  setTimeout(() => {
+    const el = document.getElementById('pageLoader');
+    if (el) el.classList.add('page-loader-hidden');
+  }, 8000);
+</script>
+
+
+
+<nav class="navbar">
+  <div class="nav-brand" onclick="location.href='index.html'"><span data-icon="store" data-icon-size="20"></span> PaperCraft</div>
+  <div class="nav-spacer"></div>
+  <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html"><span data-icon="home" data-icon-size="16"></span> Inicio</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="shop.html"><span data-icon="bag" data-icon-size="16"></span> Tienda</a>
+    <span class="nav-sep" aria-hidden="true"></span>
+    <a href="games.html"><span data-icon="game" data-icon-size="16"></span> Juegos</a>
+    <span class="nav-sep" data-auth-only aria-hidden="true" style="display: none;"></span>
+    <a href="#" data-auth-only style="display: none;" onclick="openProfileModal(); return false;"><span data-icon="user" data-icon-size="16"></span> Mi Perfil</a>
+    <span class="nav-sep" data-admin-only aria-hidden="true" style="display: none;"></span>
+    <a href="admin.html" data-admin-only style="display: none;"><span data-icon="admin" data-icon-size="16"></span> Panel Admin</a>
+  </div>
+  <div class="navbar-auth-section">
+    <!-- Se completa con JavaScript -->
+  </div>
+</nav>
+
+<div class="container">
+  <h1><span data-icon="cart" data-icon-size="30"></span> Mi Carrito</h1>
+
+  <div class="cart-grid">
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty">
+        <p style="margin-bottom: 20px; color:#00D9FF;"><span data-icon="cart" data-icon-size="50"></span></p>
+        <p style="font-size: 1.2rem; margin-bottom: 10px;">Tu carrito está vacío</p>
+        <p style="margin-bottom: 20px;">Explora nuestros productos y agrega artículos</p>
+        <a href="shop.html" class="btn">Ir a la Tienda</a>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <div class="summary-title"><span data-icon="card" data-icon-size="18"></span> Resumen</div>
+
+      <div id="creditosResumenBox" style="background: rgba(57,255,20,0.08); border: 1px solid #39FF14; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span style="color:#a8b8cc; font-size:0.85rem;">Créditos ganados en juegos</span>
+          <span id="creditosResumenValue" style="color:#39FF14; font-weight:900; font-size:1.1rem;">0</span>
+        </div>
+        <button id="btn-canjear-creditos" onclick="canjearCreditosPorBono()" style="display:none; width:100%; margin-top:10px; padding:8px; background:linear-gradient(135deg, #39FF14, #00D9FF); color:#0a0e27; border:none; border-radius:6px; font-weight:800; cursor:pointer;">
+          Canjear 3.000 créditos por 5% de descuento
+        </button>
+      </div>
+
+      <div class="pickup-toggle-row">
+        <span class="pickup-toggle-label">
+          <span data-icon="store" data-icon-size="16"></span>
+          Recoger en tienda
+        </span>
+        <button type="button" id="pickup-switch" class="pickup-switch" onclick="toggleRecogerEnTienda()" aria-label="Recoger en tienda"></button>
+      </div>
+
+      <div class="coupon-section">
+        <input type="text" id="couponInput" class="coupon-input" placeholder="Código descuento">
+        <button onclick="aplicarCupon()" class="coupon-btn">Aplicar</button>
+      </div>
+      <p id="misDescuentosHint" style="display:none; color:#39FF14; font-size:0.8rem; margin:-10px 0 15px;"></p>
+
+      <div class="summary-row">
+        <span class="summary-label">Subtotal</span>
+        <span class="summary-value" id="subtotal">$0</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">IVA (19%)</span>
+        <span class="summary-value" id="iva">$0</span>
+      </div>
+      <div class="summary-row" id="envioRow">
+        <span class="summary-label">Envío</span>
+        <span class="summary-value" id="envio">$15.000</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Descuento</span>
+        <span class="summary-value" id="descuento">$0</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">TOTAL</span>
+        <span class="summary-value" id="total">$0</span>
+      </div>
+
+      <button onclick="checkout()" class="checkout-btn"><span data-icon="card" data-icon-size="18"></span> Pagar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 PaperCraft Systems &mdash; Diseña, construye, domina.</p>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="js/utils/icons.js"></script>
+<script src="js/utils/currency.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/invoice.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dataManager.js"></script>
+<script src="js/ui.js"></script>
+
+<script>
+  // Cupones promocionales fijos (campañas de marketing)
+  const COUPONS = {
+    'NUEVO20': 0.20,
+    'PRIMERA10': 0.10,
+    'VERANO15': 0.15,
+    'VIPGOLD': 0.25
+  };
+
+  let discountApplied = 0;
+  let discountAppliedId = null; // id del descuento ganado en juegos (si aplica), para marcarlo usado
+
+  window.addEventListener('load', async () => {
+    await Promise.all([window.AuthManager.ready(), window.DataManager.ready()]);
+    const _pageLoader = document.getElementById('pageLoader');
+    if (_pageLoader) _pageLoader.classList.add('page-loader-hidden');
+    const auth = window.AuthManager;
+    
+    if (!auth.isAuthenticated) {
+      window.UIManager.toast('Debes iniciar sesión para ver tu carrito', 'warning');
+      setTimeout(() => location.href = 'index.html', 1000);
+      return;
+    }
+
+    window.UIManager.updateUIByRole();
+    aplicarEstadoPickupSwitch();
+    renderCart();
+    updateSummary();
+    mostrarDescuentosDisponibles();
+    mostrarCreditosResumen();
+  });
+
+  const CREDITOS_PARA_BONO = 3000;
+  const PORCENTAJE_BONO = 5;
+
+  function mostrarCreditosResumen() {
+    const auth = window.AuthManager;
+    const creditos = auth.profile?.credits ?? 0;
+    document.getElementById('creditosResumenValue').textContent = creditos;
+
+    const btn = document.getElementById('btn-canjear-creditos');
+    btn.style.display = creditos >= CREDITOS_PARA_BONO ? 'block' : 'none';
+  }
+
+  async function canjearCreditosPorBono() {
+    const auth = window.AuthManager;
+    const user = auth.getCurrentUser();
+
+    const bono = await window.AuthManager.checkAndClaimCreditsBonus(user.userId);
+
+    if (!bono.claimed) {
+      window.UIManager.toast(`Necesitas ${CREDITOS_PARA_BONO} créditos para canjear el bono`, 'warning');
+      mostrarCreditosResumen();
+      return;
+    }
+
+    const discount = await window.DataManager.addUserDiscount(user.userId, PORCENTAJE_BONO, 'creditos');
+
+    window.UIManager.toast(
+      `Canjeaste tus créditos. Ganaste un bono de ${PORCENTAJE_BONO}% de descuento — código ${discount.code}`,
+      'success'
+    );
+
+    mostrarCreditosResumen();
+    mostrarDescuentosDisponibles();
+
+    // Si hay productos en el carrito, pregunta si quiere usar el bono
+    // recién ganado directo en esta compra.
+    const cart = window.DataManager.getCart();
+    if (cart.length > 0 && confirm(`¿Quieres aplicar tu nuevo descuento de ${PORCENTAJE_BONO}% a esta compra?`)) {
+      discountApplied = PORCENTAJE_BONO / 100;
+      discountAppliedId = discount.id;
+      document.getElementById('couponInput').value = discount.code;
+      updateSummary();
+      window.UIManager.toast(`Descuento de ${PORCENTAJE_BONO}% aplicado a tu compra`, 'success');
+    }
+  }
+
+  function mostrarDescuentosDisponibles() {
+    const user = window.AuthManager.getCurrentUser();
+    const activos = window.DataManager.getActiveUserDiscounts(user.userId);
+    const hint = document.getElementById('misDescuentosHint');
+    if (activos.length === 0) {
+      hint.style.display = 'none';
+      return;
+    }
+    hint.style.display = 'block';
+    hint.innerHTML = 'Tienes descuentos ganados en juegos: ' + activos.map(d =>
+      `<span onclick="usarCodigoDescuento('${d.code}')" style="text-decoration:underline; cursor:pointer; font-weight:700;">${d.code}</span> (${d.percentage}%)`
+    ).join(', ') + ' — toca el código para usarlo';
+  }
+
+  function usarCodigoDescuento(codigo) {
+    document.getElementById('couponInput').value = codigo;
+    aplicarCupon();
+  }
+
+  function renderCart() {
+    const cart = window.DataManager.getCart();
+    const container = document.getElementById('cartItems');
+
+    if (cart.length === 0) {
+      container.innerHTML = `
+        <div class="cart-empty">
+          <p style="font-size: 50px; margin-bottom: 20px;"></p>
+          <p style="font-size: 1.2rem; margin-bottom: 10px;">Tu carrito está vacío</p>
+          <p style="margin-bottom: 20px;">Explora nuestros productos y agrega artículos</p>
+          <a href="shop.html" class="btn">Ir a la Tienda</a>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = cart.map(item => `
+      <div class="cart-item">
+        <div class="item-image">${Icons.svg(item.icon || 'package', { size: 30 })}</div>
+        <div class="item-info">
+          <div class="item-name">${item.nombre}</div>
+          <div class="item-price">${formatCOP(item.precio)}</div>
+        </div>
+        <div class="item-controls">
+          <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
+          <input type="number" class="qty-input" value="${item.quantity}" onchange="updateQty(${item.id}, 0, this.value)" min="1" max="${item.stock}">
+          <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+          <button class="remove-btn" onclick="removeItem(${item.id})">${Icons.svg('trash', { size: 15 })}</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateQty(productId, change, newValue = null) {
+    const cart = window.DataManager.getCart();
+    const item = cart.find(i => i.id === productId);
+    
+    if (item) {
+      const cantidadDeseada = newValue !== null
+        ? Math.max(1, parseInt(newValue) || 1)
+        : Math.max(1, item.quantity + change);
+
+      const result = window.DataManager.updateCartQuantity(productId, cantidadDeseada);
+      if (!result.success) {
+        window.UIManager.toast(result.message, 'warning');
+      }
+      renderCart();
+      updateSummary();
+    }
+  }
+
+  function removeItem(productId) {
+    window.DataManager.removeFromCart(productId);
+    window.UIManager.toast('Producto removido del carrito', 'info');
+    renderCart();
+    updateSummary();
+  }
+
+  // Recoger en tienda: se guarda en localStorage para que se recuerde
+  // aunque recargues la página, y para que también lo respete el cálculo
+  // final del pedido en window.DataManager.getCartTotal().
+  const RECOGER_TIENDA_KEY = 'papercraft_recoger_tienda';
+
+  function isRecogerEnTienda() {
+    return localStorage.getItem(RECOGER_TIENDA_KEY) === 'true';
+  }
+
+  function toggleRecogerEnTienda() {
+    const activo = !isRecogerEnTienda();
+    localStorage.setItem(RECOGER_TIENDA_KEY, activo ? 'true' : 'false');
+    aplicarEstadoPickupSwitch();
+    updateSummary();
+    window.UIManager.toast(
+      activo ? 'Vas a recoger en tienda' : 'Se agregó el costo de envío nuevamente',
+      activo ? 'success' : 'info'
+    );
+  }
+
+  function aplicarEstadoPickupSwitch() {
+    const btn = document.getElementById('pickup-switch');
+    if (btn) btn.classList.toggle('active', isRecogerEnTienda());
+  }
+
+  function updateSummary() {
+    const totals = window.DataManager.getCartTotal();
+    
+    document.getElementById('subtotal').textContent = formatCOP(totals.subtotal);
+    document.getElementById('iva').textContent = formatCOP(totals.iva);
+
+    const envioRow = document.getElementById('envioRow');
+    if (isRecogerEnTienda()) {
+      envioRow.style.display = 'none';
+    } else {
+      envioRow.style.display = 'flex';
+      document.getElementById('envio').textContent = formatCOP(totals.envio);
+    }
+    
+    const descuentoTotal = totals.subtotal * discountApplied;
+    document.getElementById('descuento').textContent = `−${formatCOP(descuentoTotal)}`;
+    
+    const totalFinal = totals.total - descuentoTotal;
+    document.getElementById('total').textContent = formatCOP(totalFinal);
+  }
+
+  function aplicarCupon() {
+    const codigo = document.getElementById('couponInput').value.toUpperCase();
+    const user = window.AuthManager.getCurrentUser();
+
+    if (!codigo) {
+      window.UIManager.toast('Ingresa un código', 'warning');
+      return;
+    }
+
+    // 1) Cupones fijos de marketing
+    if (COUPONS[codigo]) {
+      discountApplied = COUPONS[codigo];
+      discountAppliedId = null;
+      window.UIManager.toast(`Descuento de ${(discountApplied * 100).toFixed(0)}% aplicado`, 'success');
+      updateSummary();
+      return;
+    }
+
+    // 2) Descuentos ganados en la Ruleta u otros juegos
+    const gameDiscount = window.DataManager.findDiscountByCode(user.userId, codigo);
+    if (gameDiscount) {
+      discountApplied = gameDiscount.percentage / 100;
+      discountAppliedId = gameDiscount.id;
+      window.UIManager.toast(`Descuento de ${gameDiscount.percentage}% aplicado (premio de juego)`, 'success');
+      updateSummary();
+      return;
+    }
+
+    // Si el código existe pero ya no sirve (usado o vencido), avisamos la
+    // razón exacta en vez de un genérico "código inválido".
+    const cualquierDescuento = window.DataManager.findAnyDiscountByCode(user.userId, codigo);
+    if (cualquierDescuento) {
+      if (cualquierDescuento.used) {
+        window.UIManager.toast('Ese código ya fue usado', 'error');
+      } else if (window.DataManager.isDiscountExpired(cualquierDescuento)) {
+        window.UIManager.toast('Ese código ya venció (los premios de juegos duran 30 días)', 'error');
+      } else {
+        window.UIManager.toast('Código inválido', 'error');
+      }
+      discountApplied = 0;
+      discountAppliedId = null;
+      updateSummary();
+      return;
+    }
+
+    window.UIManager.toast('Código inválido', 'error');
+    discountApplied = 0;
+    discountAppliedId = null;
+    updateSummary();
+  }
+
+  function checkout() {
+    const cart = window.DataManager.getCart();
+    if (cart.length === 0) {
+      window.UIManager.toast('Agrega productos al carrito', 'warning');
+      return;
+    }
+
+    // doble chequeo de sesión, por si cambia algo en el futuro
+    const auth = window.AuthManager;
+    if (!auth.isAuthenticated) {
+      window.UIManager.toast('Debes tener una cuenta creada e iniciar sesión para pagar', 'warning');
+      openLoginModal();
+      return;
+    }
+
+    openPaymentMethodModal();
+  }
+
+  function openPaymentMethodModal() {
+    const totals = window.DataManager.getCartTotal();
+    const descuentoTotal = totals.subtotal * discountApplied;
+    const totalFinal = totals.total - descuentoTotal;
+    const user = window.AuthManager.getCurrentUser();
+
+    const content = `
+      <p style="color:#a8b8cc; font-size:0.9rem; margin-bottom:18px;">
+        Total a pagar: <strong style="color:#39FF14;">${formatCOP(totalFinal)}</strong>
+      </p>
+
+      <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; padding:12px 14px; background:rgba(0,217,255,0.06); border:1px solid #00D9FF; border-radius:8px; cursor:pointer;">
+        <input type="checkbox" id="notificar-pedido-checkbox" ${user.notificarPedidos ? 'checked' : ''}
+               onchange="handleToggleNotificarPedidos(this.checked)"
+               style="margin-top:2px; width:16px; height:16px; accent-color:#00D9FF; cursor:pointer;">
+        <span style="color:#a8b8cc; font-size:0.82rem;">
+          <span data-icon="mail" data-icon-size="14" style="vertical-align:-2px; color:#00D9FF;"></span>
+          Quiero recibir un correo a <strong style="color:#00D9FF;">${escapeHtml(user.email)}</strong> cuando el estado de mi pedido cambie (ej. cuando sea enviado).
+        </span>
+      </label>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <button type="button" class="btn" style="width:100%; padding:16px; display:flex; align-items:center; justify-content:center; gap:10px;" onclick="openCardPaymentModal()">
+          <span data-icon="card" data-icon-size="20"></span> Pagar con tarjeta
+        </button>
+        <button type="button" class="btn" style="width:100%; padding:16px; display:flex; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg, #39FF14, #00D9FF); color:#0a0e27;" onclick="confirmarPagoEnTienda()">
+          <span data-icon="package" data-icon-size="20"></span> Pagar en tienda (sin tarjeta)
+        </button>
+      </div>
+      <p style="color:#6b7a90; font-size:0.72rem; margin-top:16px; text-align:center;">
+        Al pagar en tienda, tu pedido queda registrado y lo pagas en efectivo al recibirlo o recogerlo.
+      </p>
+    `;
+    window.UIManager.openModal(content, 'Elige cómo pagar');
+    Icons.hydrate(document.getElementById('custom-modal'));
+  }
+
+  async function handleToggleNotificarPedidos(activo) {
+    const result = await window.AuthManager.updateOwnProfile({ notificar_pedidos: activo });
+    if (result.success) {
+      window.UIManager.toast(activo ? 'Te avisaremos por correo sobre tu pedido' : 'No recibirás avisos por correo', 'info');
+    }
+  }
+
+  async function confirmarPagoEnTienda() {
+    window.UIManager.closeModal();
+    await completarCompra('tienda');
+  }
+
+  function openCardPaymentModal() {
+    const totals = window.DataManager.getCartTotal();
+    const descuentoTotal = totals.subtotal * discountApplied;
+    const totalFinal = totals.total - descuentoTotal;
+
+    const content = `
+      <form onsubmit="procesarPago(event)" style="display: flex; flex-direction: column; gap: 15px;">
+        <p style="color:#a8b8cc; font-size:0.9rem;">Total a pagar: <strong style="color:#39FF14;">${formatCOP(totalFinal)}</strong></p>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="color: #00D9FF; font-weight: 700;">Nombre en la tarjeta</label>
+          <input type="text" id="card-name" placeholder="Como aparece en la tarjeta" autocomplete="cc-name"
+                 style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <label style="color: #00D9FF; font-weight: 700;">Número de tarjeta</label>
+          <input type="text" id="card-number" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number" maxlength="19"
+                 oninput="formatCardNumber(this)"
+                 style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <label style="color: #00D9FF; font-weight: 700;">Vencimiento</label>
+            <input type="text" id="card-expiry" placeholder="MM/AA" inputmode="numeric" autocomplete="cc-exp" maxlength="5"
+                   oninput="formatCardExpiry(this)"
+                   style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <label style="color: #00D9FF; font-weight: 700;">CVV</label>
+            <input type="text" id="card-cvv" placeholder="123" inputmode="numeric" autocomplete="cc-csc" maxlength="4"
+                   oninput="this.value = this.value.replace(/\\D/g, '')"
+                   style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
+          </div>
+        </div>
+
+        <p style="color:#a8b8cc; font-size:0.75rem; display:flex; align-items:center; gap:6px;">
+          <span data-icon="lock" data-icon-size="13"></span> Los datos de tu tarjeta no se almacenan. Este es un pago simulado para fines de demostración.
+        </p>
+
+        <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 4px;">
+          <span data-icon="card" data-icon-size="18"></span> Pagar ${formatCOP(totalFinal)}
+        </button>
+      </form>
+    `;
+    window.UIManager.openModal(content, 'Datos de pago');
+  }
+
+  function formatCardNumber(input) {
+    const digits = input.value.replace(/\D/g, '').slice(0, 16);
+    input.value = digits.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function formatCardExpiry(input) {
+    let digits = input.value.replace(/\D/g, '').slice(0, 4);
+    if (digits.length >= 3) digits = digits.slice(0, 2) + '/' + digits.slice(2);
+    input.value = digits;
+  }
+
+  function procesarPago(event) {
+    event.preventDefault();
+
+    const auth = window.AuthManager;
+    if (!auth.isAuthenticated) {
+      window.UIManager.toast('Debes tener una cuenta creada e iniciar sesión para pagar', 'warning');
+      window.UIManager.closeModal();
+      return;
+    }
+
+    const nombre = document.getElementById('card-name').value.trim();
+    const numero = document.getElementById('card-number').value.replace(/\s/g, '');
+    const vencimiento = document.getElementById('card-expiry').value.trim();
+    const cvv = document.getElementById('card-cvv').value.trim();
+
+    // Lista por nombre los campos faltantes, igual que en el registro.
+    const faltantes = [];
+    if (!nombre) faltantes.push('Nombre en la tarjeta');
+    if (!numero) faltantes.push('Número de tarjeta');
+    if (!vencimiento) faltantes.push('Vencimiento');
+    if (!cvv) faltantes.push('CVV');
+    if (faltantes.length > 0) {
+      window.UIManager.toast(`Falta completar: ${faltantes.join(', ')}`, 'error');
+      return;
+    }
+
+    if (!/^\d{13,16}$/.test(numero)) {
+      window.UIManager.toast('El número de tarjeta no es válido', 'error');
+      return;
+    }
+
+    const expiryMatch = vencimiento.match(/^(\d{2})\/(\d{2})$/);
+    if (!expiryMatch) {
+      window.UIManager.toast('El vencimiento debe tener el formato MM/AA', 'error');
+      return;
+    }
+    const mes = parseInt(expiryMatch[1], 10);
+    const anio = 2000 + parseInt(expiryMatch[2], 10);
+    if (mes < 1 || mes > 12) {
+      window.UIManager.toast('El mes de vencimiento no es válido', 'error');
+      return;
+    }
+    const ahora = new Date();
+    const expiraFin = new Date(anio, mes, 0); // último día del mes de vencimiento
+    if (expiraFin < ahora) {
+      window.UIManager.toast('La tarjeta está vencida', 'error');
+      return;
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      window.UIManager.toast('El CVV no es válido', 'error');
+      return;
+    }
+
+    completarCompra('tarjeta');
+  }
+
+  async function completarCompra(metodoPago = 'tarjeta') {
+    const cart = window.DataManager.getCart();
+    const auth = window.AuthManager;
+    const user = auth.getCurrentUser();
+    const totals = window.DataManager.getCartTotal();
+    const descuentoTotal = totals.subtotal * discountApplied;
+    const totalFinal = totals.total - descuentoTotal;
+
+    // Crear orden
+    let order;
+    try {
+      order = await window.DataManager.createOrder(
+        user.userId,
+        user.username,
+        cart,
+        totalFinal,
+        descuentoTotal,
+        metodoPago
+      );
+    } catch (error) {
+      window.UIManager.toast('No se pudo registrar la compra: ' + error.message, 'error');
+      return;
+    }
+
+    // Si el descuento aplicado proviene de un premio de juego, se marca como
+    // usado para que no pueda canjearse de nuevo.
+    if (discountAppliedId) {
+      await window.DataManager.markDiscountUsed(discountAppliedId);
+    }
+
+    window.UIManager.closeModal();
+    window.UIManager.toast(
+      metodoPago === 'tienda' ? 'Registrando tu pedido...' : `Procesando pago de ${formatCOP(totalFinal)}...`,
+      'info'
+    );
+
+    setTimeout(async () => {
+      window.UIManager.toast(`Compra realizada. Orden #${order.id}`, 'success');
+
+      try {
+        await generarFacturaPDF(order, user);
+      } catch (error) {
+        console.error('No se pudo generar la factura en PDF:', error);
+        window.UIManager.toast('La compra se registró bien, pero no se pudo generar la factura en PDF', 'warning');
+      }
+
+      window.DataManager.clearCart();
+      renderCart();
+      updateSummary();
+      mostrarDescuentosDisponibles();
+      discountApplied = 0;
+      discountAppliedId = null;
+      document.getElementById('couponInput').value = '';
+    }, 2000);
+  }
+
+  // generarFacturaPDF vive en js/invoice.js, compartido con "Mi Perfil" en todas las páginas
+
+  // logout() está definido globalmente en js/ui.js
+
+  window.addEventListener('cartUpdated', () => {
+    renderCart();
+    updateSummary();
+  });
+</script>
+
+</body>
+</html>

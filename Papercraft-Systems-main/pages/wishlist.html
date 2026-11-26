@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Wishlist - PaperCraft Systems</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/wishlist.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-logo-wrap"><span></span></div>
+    <div style="font-size:16px;font-weight:700;color:var(--primary-700);">PaperCraft</div>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a href="../index.html">Inicio</a>
+    <a href="../shop.html">Tienda</a>
+    <a href="wishlist.html"> Wishlist</a>
+  </div>
+  <div class="nav-cta">
+    <a href="../cart.html" class="btn btn-primary"> Carrito</a>
+    <a href="profile.html" class="btn btn-outline" style="margin-left:8px;"></a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<section class="wishlist-header">
+  <h1> Mi Lista de Favoritos</h1>
+  <p>Tus productos guardados</p>
+</section>
+
+<!-- WISHLIST CONTAINER -->
+<div class="wishlist-container">
+  
+  <!-- STATS -->
+  <div class="wishlist-stats">
+    <div class="stat">
+      <span class="stat-number" id="wishlist-count">5</span>
+      <span class="stat-label">Productos</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number" id="wishlist-value">$602.000</span>
+      <span class="stat-label">Valor Total</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number" id="wishlist-savings">$90.000</span>
+      <span class="stat-label">Ahorrar con Descuentos</span>
+    </div>
+  </div>
+
+  <!-- FILTER & ACTIONS -->
+  <div class="wishlist-controls">
+    <div class="wishlist-filter">
+      <input type="text" placeholder=" Buscar en mis favoritos..." class="search-input">
+      <select class="filter-select">
+        <option>Ordenar por: Reciente</option>
+        <option>Precio: Menor a Mayor</option>
+        <option>Precio: Mayor a Menor</option>
+        <option>Nombre: A-Z</option>
+      </select>
+    </div>
+    <div class="wishlist-actions">
+      <button class="btn btn-outline"><span data-icon="chat" data-icon-size="14"></span> Compartir</button>
+      <button class="btn btn-outline"><span data-icon="trash" data-icon-size="14"></span> Limpiar</button>
+    </div>
+  </div>
+
+  <!-- WISHLIST GRID -->
+  <div class="wishlist-grid" id="wishlistGrid">
+    
+    <!-- ITEM 1 -->
+    <div class="wishlist-item">
+      <div class="wishlist-item-image">
+        <div class="emoji-large"><span data-icon="gift" data-icon-size="40"></span></div>
+        <button class="remove-btn" title="Eliminar de wishlist"><span data-icon="close" data-icon-size="14"></span></button>
+        <span class="discount-badge">-10%</span>
+      </div>
+      <div class="wishlist-item-info">
+        <h3>Tarjeta Navidad Premium</h3>
+        <p class="category">Tarjetas</p>
+        <div class="rating"><span data-icon="star" data-icon-size="13"></span> (120 reviews)</div>
+        <div class="price-section">
+          <span class="original-price">$72.000</span>
+          <span class="current-price">$64.000</span>
+          <span class="savings">Ahorras $8.000</span>
+        </div>
+        <div class="stock-info">
+          <span class="stock-badge in-stock"><span data-icon="check" data-icon-size="12"></span> En Stock</span>
+          <span style="font-size: 12px; color: var(--gris-500);">50 disponibles</span>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="addToCart(1)"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="viewProduct(1)"><span data-icon="eye" data-icon-size="14"></span> Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM 2 -->
+    <div class="wishlist-item">
+      <div class="wishlist-item-image">
+        <div class="emoji-large"><span data-icon="gift" data-icon-size="40"></span></div>
+        <button class="remove-btn" title="Eliminar de wishlist"><span data-icon="close" data-icon-size="14"></span></button>
+      </div>
+      <div class="wishlist-item-info">
+        <h3>Kit Artesanía Deluxe</h3>
+        <p class="category">Kits</p>
+        <div class="rating"><span data-icon="star" data-icon-size="13"></span> (85 reviews)</div>
+        <div class="price-section">
+          <span class="original-price">$240.000</span>
+          <span class="current-price">$184.000</span>
+          <span class="savings">Ahorras $56.000</span>
+        </div>
+        <div class="stock-info">
+          <span class="stock-badge in-stock"><span data-icon="check" data-icon-size="12"></span> En Stock</span>
+          <span style="font-size: 12px; color: var(--gris-500);">30 disponibles</span>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="addToCart(2)"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="viewProduct(2)"><span data-icon="eye" data-icon-size="14"></span> Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM 3 -->
+    <div class="wishlist-item">
+      <div class="wishlist-item-image">
+        <div class="emoji-large"><span data-icon="gift" data-icon-size="40"></span></div>
+        <button class="remove-btn" title="Eliminar de wishlist"><span data-icon="close" data-icon-size="14"></span></button>
+      </div>
+      <div class="wishlist-item-info">
+        <h3>Figura Decorativa 3D</h3>
+        <p class="category">Figuras</p>
+        <div class="rating"><span data-icon="star" data-icon-size="13"></span> (95 reviews)</div>
+        <div class="price-section">
+          <span class="current-price">$120.000</span>
+        </div>
+        <div class="stock-info">
+          <span class="stock-badge in-stock"><span data-icon="check" data-icon-size="12"></span> En Stock</span>
+          <span style="font-size: 12px; color: var(--gris-500);">25 disponibles</span>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="addToCart(3)"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="viewProduct(3)"><span data-icon="eye" data-icon-size="14"></span> Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM 4 -->
+    <div class="wishlist-item">
+      <div class="wishlist-item-image">
+        <div class="emoji-large"><span data-icon="gift" data-icon-size="40"></span></div>
+        <button class="remove-btn" title="Eliminar de wishlist"><span data-icon="close" data-icon-size="14"></span></button>
+        <span class="discount-badge">-5%</span>
+      </div>
+      <div class="wishlist-item-info">
+        <h3>Paquete 100 Tarjetas</h3>
+        <p class="category">Paquetes</p>
+        <div class="rating"><span data-icon="star" data-icon-size="13"></span> (60 reviews)</div>
+        <div class="price-section">
+          <span class="original-price">$56.000</span>
+          <span class="current-price">$52.000</span>
+          <span class="savings">Ahorras $4.000</span>
+        </div>
+        <div class="stock-info">
+          <span class="stock-badge in-stock"><span data-icon="check" data-icon-size="12"></span> En Stock</span>
+          <span style="font-size: 12px; color: var(--gris-500);">100 disponibles</span>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="addToCart(4)"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="viewProduct(4)"><span data-icon="eye" data-icon-size="14"></span> Ver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEM 5 -->
+    <div class="wishlist-item">
+      <div class="wishlist-item-image">
+        <div class="emoji-large"><span data-icon="gift" data-icon-size="40"></span></div>
+        <button class="remove-btn" title="Eliminar de wishlist"><span data-icon="close" data-icon-size="14"></span></button>
+      </div>
+      <div class="wishlist-item-info">
+        <h3>Tarjeta Cumpleaños</h3>
+        <p class="category">Tarjetas</p>
+        <div class="rating"><span data-icon="star" data-icon-size="13"></span> (140 reviews)</div>
+        <div class="price-section">
+          <span class="current-price">$36.000</span>
+        </div>
+        <div class="stock-info">
+          <span class="stock-badge out-of-stock"><span data-icon="close" data-icon-size="12"></span> Agotado</span>
+          <span style="font-size: 12px; color: var(--gris-500);">Notificar cuando esté disponible</span>
+        </div>
+        <div class="wishlist-item-actions">
+          <button class="btn btn-primary btn-sm" disabled><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+          <button class="btn btn-outline btn-sm" onclick="viewProduct(5)"><span data-icon="eye" data-icon-size="14"></span> Ver</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div class="recommendations-section" style="margin-top: 60px;">
+    <h2> Recomendaciones Relacionadas</h2>
+    <p style="color: var(--gris-600); margin-bottom: 20px;">Basado en tus favoritos</p>
+    
+    <div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+      <div class="product-card">
+        <div class="product-image"></div>
+        <div class="product-info">
+          <div class="product-name">Combo Premium</div>
+          <div class="product-price">$360.000</div>
+          <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 10px;"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+        </div>
+      </div>
+      
+      <div class="product-card">
+        <div class="product-image"></div>
+        <div class="product-info">
+          <div class="product-name">Kit Origami</div>
+          <div class="product-price">$140.000</div>
+          <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 10px;"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-image"></div>
+        <div class="product-info">
+          <div class="product-name">Flores de Papel</div>
+          <div class="product-price">$80.000</div>
+          <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 10px;"><span data-icon="cart" data-icon-size="14"></span> Agregar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCRIPTS -->
+<script src="../js/utils/icons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
+<script src="../js/wishlist.js"></script>
+
+</body>
+</html>

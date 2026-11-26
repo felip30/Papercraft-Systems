@@ -1,0 +1,11 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos del editor
+.vscode/
+*.swp
+
+# Por si alguna vez se agrega un .env real (hoy el proyecto no usa ninguno)
+.env
+.env.local

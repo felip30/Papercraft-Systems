@@ -755,9 +755,9 @@ function openPurchaseHistoryModal() {
             <p style="color:#39FF14; font-weight:900;">${formatCOP(o.total)}</p>
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <button type="button" onclick="descargarFacturaPedido(${o.id})"
+            <button type="button" onclick="descargarComprobantePedido(${o.id})"
                     style="padding:6px 12px; font-size:0.75rem; background:rgba(0,217,255,0.1); border:1px solid #00D9FF; color:#00D9FF; border-radius:6px; cursor:pointer; font-weight:700;">
-              Descargar factura
+              Descargar comprobante
             </button>
             ${puedeCancelar ? `<span class="cancel-timer-slot" data-order-id="${o.id}" data-limite="${limiteMs}"></span>` : ''}
           </div>

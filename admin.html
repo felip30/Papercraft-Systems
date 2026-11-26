@@ -666,7 +666,7 @@
 <script src="js/utils/icons.js"></script>
 <script src="js/utils/currency.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
-<script src="js/invoice.js"></script>
+<script src="js/comprobante.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
@@ -1050,8 +1050,8 @@
               <option value="completado" ${order.status === 'completado' ? 'selected' : ''}>Completado</option>
               <option value="cancelado" ${order.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
             </select>
-            <button class="action-btn" onclick="descargarFacturaPedidoAdmin(${order.id})" style="margin-top:6px;">
-              <span data-icon="document" data-icon-size="14"></span> Factura
+            <button class="action-btn" onclick="descargarComprobantePedidoAdmin(${order.id})" style="margin-top:6px;">
+              <span data-icon="document" data-icon-size="14"></span> Comprobante
             </button>
           </td>
         </tr>
@@ -1477,10 +1477,10 @@
     }
   }
 
-  // Descarga la factura de CUALQUIER pedido desde el Panel Admin, con los
+  // Descarga el comprobante de pago de CUALQUIER pedido desde el Panel Admin, con los
   // datos del cliente que lo compró (no los del admin que la descarga).
-  // generarFacturaPDF vive en js/invoice.js, compartido con el resto del sitio.
-  async function descargarFacturaPedidoAdmin(orderId) {
+  // generarComprobantePagoPDF vive en js/comprobante.js, compartido con el resto del sitio.
+  async function descargarComprobantePedidoAdmin(orderId) {
     const order = window.DataManager.getOrderById(orderId);
     if (!order) {
       window.UIManager.toast('No se encontró el pedido', 'error');
@@ -1489,10 +1489,10 @@
     const cliente = (window._adminUsersCache || []).find(u => u.username === order.userName);
     const user = { username: order.userName, email: cliente?.email || '' };
     try {
-      await generarFacturaPDF(order, user);
+      await generarComprobantePagoPDF(order, user);
     } catch (error) {
-      console.error('No se pudo generar la factura:', error);
-      window.UIManager.toast('No se pudo generar la factura: ' + error.message, 'error');
+      console.error('No se pudo generar el comprobante de pago:', error);
+      window.UIManager.toast('No se pudo generar el comprobante de pago: ' + error.message, 'error');
     }
   }
 

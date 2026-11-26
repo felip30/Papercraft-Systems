@@ -7,7 +7,7 @@ datos en la nube (Supabase), no a datos falsos guardados en el navegador.
 ## Tecnologías utilizadas
 - HTML5, CSS3 (tema neón/cyberpunk), JavaScript (Vanilla, sin frameworks ni build)
 - Supabase: base de datos (Postgres), autenticación, Storage (fotos de perfil)
-- jsPDF: generación de facturas y comprobantes en PDF
+- jsPDF: generación de comprobantes de pago y de cancelación en PDF
 
 ## Cómo levantar el proyecto de cero
 
@@ -25,7 +25,7 @@ js/auth.js         → sesión, login/registro, faltas, sesión única por cuent
 js/dataManager.js  → productos, pedidos, juegos, descuentos, Vault Gamer
 js/ui.js           → modales, perfil, historial de compras, notificaciones
 js/games-controller.js → lógica de los 4 juegos (Ruleta, Memoria, Trivia, Dado)
-js/invoice.js      → generación de facturas y comprobantes en PDF
+js/comprobante.js  → comprobantes de pago y de cancelación en PDF
 js/product-form.js → formulario de producto (agregar/editar) compartido por tienda y panel admin
 js/navbar.js       → navbar compartido de tienda, carrito y juegos
 js/page-loader.js  → pantalla de carga compartida (zorro + anillo)
@@ -39,8 +39,8 @@ assets/            → favicon, código QR, logo
 ## Funciones principales
 
 - Catálogo con imágenes opcionales, filtros y control de stock automático.
-- Carrito con pago simulado por tarjeta o pago en tienda, factura en PDF con código QR y de recogida.
+- Carrito con pago simulado por tarjeta o pago en tienda, comprobante de pago en PDF con código QR y de recogida.
 - 4 juegos con créditos y descuentos reales, límite diario controlado por la base de datos.
-- Historial de compras del cliente: cancelar (con temporizador de 7 minutos gratis), descargar factura.
+- Historial de compras del cliente: cancelar (con temporizador de 7 minutos gratis), descargar comprobante de pago.
 - Panel de administrador: inventario, usuarios, pedidos, informe de juegos y premios, Vault Gamer.
 - Seguridad: RLS en todas las tablas, protección contra XSS y fuerza bruta, una sola sesión activa por cuenta.

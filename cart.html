@@ -345,7 +345,7 @@
 <script src="js/utils/currency.js"></script>
 <script src="js/utils/card.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
-<script src="js/invoice.js"></script>
+<script src="js/comprobante.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
@@ -779,10 +779,10 @@
       window.UIManager.toast(`Compra realizada. Orden #${order.id}`, 'success');
 
       try {
-        await generarFacturaPDF(order, user);
+        await generarComprobantePagoPDF(order, user);
       } catch (error) {
-        console.error('No se pudo generar la factura en PDF:', error);
-        window.UIManager.toast('La compra se registró bien, pero no se pudo generar la factura en PDF', 'warning');
+        console.error('No se pudo generar el comprobante de pago en PDF:', error);
+        window.UIManager.toast('La compra se registró bien, pero no se pudo generar el comprobante de pago en PDF', 'warning');
       }
 
       window.DataManager.clearCart();
@@ -795,7 +795,7 @@
     }, 2000);
   }
 
-  // generarFacturaPDF vive en js/invoice.js, compartido con "Mi Perfil" en todas las páginas
+  // generarComprobantePagoPDF vive en js/comprobante.js, compartido con "Mi Perfil" en todas las páginas
 
   // logout() está definido globalmente en js/ui.js
 

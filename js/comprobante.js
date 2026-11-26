@@ -1,13 +1,13 @@
 /**
- * FACTURA EN PDF - PaperCraft Systems
+ * COMPROBANTES EN PDF - PaperCraft Systems
  *
  * Compartido entre todas las páginas (no solo el carrito), porque "Mi
- * Perfil" — desde donde también se puede descargar la factura de un
+ * Perfil" — desde donde también se puede descargar el comprobante de pago de un
  * pedido anterior — se abre desde cualquier lugar del sitio.
  *
  * Requiere que la librería jsPDF ya esté cargada:
  *   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
- *   <script src="js/invoice.js"></script>
+ *   <script src="js/comprobante.js"></script>
  */
 
 // Convierte una imagen (PNG/JPEG) ya existente en un archivo del proyecto
@@ -55,7 +55,7 @@ function svgToPngDataUrl(svgPath, size) {
 const PDF_ENCABEZADO_FIN = 36;
 
 // Crea el PDF A4 con el encabezado común de la tienda (logo del zorro,
-// nombre, eslogan y línea divisoria). Lo usan la factura y el comprobante
+// nombre, eslogan y línea divisoria). Lo usan el comprobante de pago y el comprobante
 // de cancelación. "documento" solo se usa en el aviso si el logo no carga.
 async function crearPdfConEncabezado(documento) {
   const { jsPDF } = window.jspdf;
@@ -87,15 +87,15 @@ async function crearPdfConEncabezado(documento) {
   return { doc, pageWidth, margin };
 }
 
-async function generarFacturaPDF(order, user) {
-  const { doc, pageWidth, margin } = await crearPdfConEncabezado('la factura');
+async function generarComprobantePagoPDF(order, user) {
+  const { doc, pageWidth, margin } = await crearPdfConEncabezado('el comprobante de pago');
   let y = PDF_ENCABEZADO_FIN + 10;
 
-  // Datos de la factura
+  // Datos del comprobante de pago
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(20, 20, 30);
-  doc.text(`Factura de pago — Orden #${order.id}`, margin, y);
+  doc.text(`Comprobante de pago — Orden #${order.id}`, margin, y);
   y += 8;
 
   doc.setFontSize(10);
@@ -198,8 +198,8 @@ async function generarFacturaPDF(order, user) {
     doc.setFontSize(7);
     doc.text('Escanea para visitar PaperCraft Systems', qrX + qrSize / 2, qrY + qrSize + 4, { align: 'center' });
   } catch (e) {
-    console.error('No se pudo agregar el código QR a la factura:', e);
-    if (window.UIManager) window.UIManager.toast('No se pudo agregar el código QR a la factura: ' + e.message, 'warning');
+    console.error('No se pudo agregar el código QR al comprobante:', e);
+    if (window.UIManager) window.UIManager.toast('No se pudo agregar el código QR al comprobante: ' + e.message, 'warning');
   }
 
   // Pie de página
@@ -208,12 +208,12 @@ async function generarFacturaPDF(order, user) {
   doc.setFontSize(9);
   doc.text('Gracias por tu compra en PaperCraft Systems.', margin, 280);
 
-  doc.save(`factura-orden-${order.id}.pdf`);
+  doc.save(`comprobante-pago-orden-${order.id}.pdf`);
 }
 
-// Descarga la factura de un pedido puntual — se usa desde "Mi Perfil" →
+// Descarga el comprobante de pago de un pedido puntual — se usa desde "Mi Perfil" →
 // Historial de Compras, en cualquier página del sitio.
-async function descargarFacturaPedido(orderId) {
+async function descargarComprobantePedido(orderId) {
   const order = window.DataManager.getOrderById(orderId);
   if (!order) {
     if (window.UIManager) window.UIManager.toast('No se encontró el pedido', 'error');
@@ -221,10 +221,10 @@ async function descargarFacturaPedido(orderId) {
   }
   const user = window.AuthManager.getCurrentUser();
   try {
-    await generarFacturaPDF(order, user);
+    await generarComprobantePagoPDF(order, user);
   } catch (error) {
-    console.error('No se pudo generar la factura:', error);
-    if (window.UIManager) window.UIManager.toast('No se pudo generar la factura: ' + error.message, 'error');
+    console.error('No se pudo generar el comprobante de pago:', error);
+    if (window.UIManager) window.UIManager.toast('No se pudo generar el comprobante de pago: ' + error.message, 'error');
   }
 }
 
@@ -237,7 +237,7 @@ async function generarComprobanteCancelacion(order, user) {
   let y = PDF_ENCABEZADO_FIN + 12;
 
   // Encabezado del comprobante, destacado en rojo/rosa para diferenciarlo
-  // claramente de una factura normal.
+  // claramente del comprobante de pago.
   doc.setFillColor(255, 235, 240);
   doc.setDrawColor(255, 0, 110);
   doc.roundedRect(margin, y, pageWidth - margin * 2, 16, 2, 2, 'FD');

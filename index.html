@@ -72,6 +72,34 @@
       animation: float 3s ease-in-out infinite;
     }
 
+    /* el zorro mide lo mismo que medía el emoji (sigue el font-size de
+       .hero-logo); en sus etapas pixeladas se escala sin suavizar */
+    .hero-fox {
+      display: inline-block;
+      width: 1.15em;
+      height: auto;
+      vertical-align: middle;
+    }
+    .hero-fox.hero-fox-pixel {
+      image-rendering: pixelated;
+    }
+    /* clones que se abren hacia los lados (los crea js/hero-fox.js) */
+    .hero-fox-grupo {
+      position: relative;
+    }
+    .hero-fox-clon {
+      position: absolute;
+      left: 50%;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateX(var(--dx, 0px)) scale(var(--escala, 1));
+      transform-origin: center center;
+      transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .hero-fox-clon.hero-fox-clon-visible {
+      opacity: 1;
+    }
+
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-20px); }
@@ -646,7 +674,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-logo">🦊</div>
+    <div class="hero-logo"><img id="heroFox" class="hero-fox" src="assets/zorro-hero.svg" alt="Zorro de PaperCraft Systems"></div>
     <h1>PAPERCRAFT SYSTEMS</h1>
     <div class="hero-tagline">Diseña • Construye • Domina</div>
     <p class="hero-description">
@@ -797,6 +825,7 @@
 <script src="js/dataManager.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/product-form.js"></script>
+<script src="js/hero-fox.js"></script>
 
 <script>
   // Login, Registro, Recuperación de contraseña, Mi Perfil y Logout

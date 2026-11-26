@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 104" width="240" height="208">
+  <title>Zorro de PaperCraft</title>
+  <defs>
+    <linearGradient id="zh-cabeza" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFA63D"/>
+      <stop offset="1" stop-color="#F26A1B"/>
+    </linearGradient>
+    <linearGradient id="zh-oreja" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B2622"/>
+      <stop offset="0.3" stop-color="#3B2622"/>
+      <stop offset="0.42" stop-color="#F58A2A"/>
+      <stop offset="1" stop-color="#F58A2A"/>
+    </linearGradient>
+    <linearGradient id="zh-hocico" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE7B8"/>
+      <stop offset="0.6" stop-color="#FCCDA6"/>
+      <stop offset="1" stop-color="#F39AAE"/>
+    </linearGradient>
+    <radialGradient id="zh-brillo" cx="0.4" cy="0.25" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- orejas -->
+  <path d="M16 54 C14 34 20 12 31 2 C40 10 48 22 53 32 Z" fill="url(#zh-oreja)"/>
+  <path d="M104 54 C106 34 100 12 89 2 C80 10 72 22 67 32 Z" fill="url(#zh-oreja)"/>
+  <path d="M25 46 C24 34 27 22 32 14 C37 20 42 27 45 34 Z" fill="#E4542A"/>
+  <path d="M95 46 C96 34 93 22 88 14 C83 20 78 27 75 34 Z" fill="#E4542A"/>
+
+  <!-- cabeza -->
+  <ellipse cx="60" cy="60" rx="42" ry="34" fill="url(#zh-cabeza)"/>
+  <ellipse cx="60" cy="60" rx="42" ry="34" fill="url(#zh-brillo)"/>
+
+  <!-- hocico ancho (mejillas que sobresalen a los lados) -->
+  <path d="M4 68 C22 63 40 64 60 72 C80 64 98 63 116 68 C110 90 88 102 60 102 C32 102 10 90 4 68 Z" fill="url(#zh-hocico)"/>
+
+  <!-- ojos -->
+  <rect x="42" y="50" width="6.5" height="11" rx="3.25" fill="#3B2622"/>
+  <rect x="71.5" y="50" width="6.5" height="11" rx="3.25" fill="#3B2622"/>
+
+  <!-- nariz y boca -->
+  <path d="M53 73 C53 70 67 70 67 73 C67 77 62 80 60 80 C58 80 53 77 53 73 Z" fill="#2B1810"/>
+  <path d="M60 80 L60 83 C58 87 53 88 50 85 M60 83 C62 87 67 88 70 85" fill="none" stroke="#2B1810" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

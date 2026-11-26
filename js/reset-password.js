@@ -7,6 +7,8 @@
  * el evento "PASSWORD_RECOVERY" con una sesión temporal válida solo para
  * cambiar la contraseña (no es un login normal).
  */
+// Id del subtítulo de la pantalla
+const ID_RESET_SUBTITULO = 'reset-subtitle';
 
 let recoverySessionLista = false;
 
@@ -18,14 +20,14 @@ function mostrarEstado(mensaje, tipo) {
 
 function mostrarFormulario() {
   recoverySessionLista = true;
-  document.getElementById('reset-subtitle').textContent =
+  document.getElementById(ID_RESET_SUBTITULO).textContent =
     'Escribe tu nueva contraseña para terminar de recuperar tu cuenta.';
   document.getElementById('reset-form').style.display = 'flex';
 }
 
 function mostrarEnlaceInvalido() {
   document.getElementById('reset-title').textContent = 'Enlace no válido';
-  document.getElementById('reset-subtitle').textContent =
+  document.getElementById(ID_RESET_SUBTITULO).textContent =
     'Este enlace de recuperación ya expiró o no es válido. Pide uno nuevo desde el inicio de sesión.';
   mostrarEstado('No encontramos una recuperación de contraseña activa para este enlace.', 'error');
 }
@@ -94,7 +96,7 @@ async function handleResetSubmit(event) {
 
   document.getElementById('reset-form').style.display = 'none';
   document.getElementById('reset-title').textContent = '¡Contraseña actualizada!';
-  document.getElementById('reset-subtitle').textContent =
+  document.getElementById(ID_RESET_SUBTITULO).textContent =
     'Ya puedes iniciar sesión con tu nueva contraseña.';
   mostrarEstado('Contraseña actualizada exitosamente', 'success');
 

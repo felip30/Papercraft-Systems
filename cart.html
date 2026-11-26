@@ -5,34 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carrito - PaperCraft Systems</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/main.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
-       modal bloquea el scroll (position: fixed en body), se asoma el
-       blanco por defecto del navegador en el hueco que queda */
-    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
-       transparente y la lluvia de números (z-index: -1) se sigue viendo
-       por delante del fondo, en vez de quedar tapada */
-    html {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
-    }
-    body {
-      background: transparent;
-      color: #e8ecf1;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 5%;
-    }
-
     h1 {
       font-size: 2.5rem;
       margin-bottom: 40px;
@@ -273,14 +247,6 @@
       cursor: not-allowed;
     }
 
-    footer {
-      background: rgba(10, 14, 39, 0.95);
-      border-top: 2px solid #00D9FF;
-      padding: 40px 5%;
-      text-align: center;
-      color: #a8b8cc;
-      margin-top: 60px;
-    }
 
     @media (max-width: 768px) {
       .cart-grid {
@@ -295,126 +261,14 @@
       .nav-links { display: none; }
     }
   
-    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
-       muestra apenas arranca la página y se oculta solo cuando los datos
-       ya están listos para mostrarse. */
-    #pageLoader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #0a0e27;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      transition: opacity 0.35s ease;
-    }
-    #pageLoader.page-loader-hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .page-loader-ring-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .page-loader-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 4px solid rgba(0, 217, 255, 0.15);
-      border-top-color: #00D9FF;
-      border-right-color: #FF006E;
-      animation: pageLoaderSpin 1s linear infinite;
-    }
-    .page-loader-fox {
-      width: 56px;
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
-    }
-    @keyframes pageLoaderSpin {
-      to { transform: rotate(360deg); }
-    }
-    .page-loader-text {
-      color: #a8b8cc;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .page-loader-ring { animation: none; }
-    }
-
   </style>
 </head>
 <body>
-<div id="pageLoader">
-  <div class="page-loader-ring-wrap">
-    <div class="page-loader-ring"></div>
-    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
-      <!-- cola enroscada al frente -->
-      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
-      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
-      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
-      <!-- cuerpo sentado (más ancho abajo) -->
-      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
-      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
-      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
-      <!-- cabeza -->
-      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
-      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
-      <!-- orejas -->
-      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <!-- ojos cerrados (esperando tranquilo) -->
-      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
-      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
-      <!-- hocico -->
-      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
-      <!-- patas delanteras -->
-      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
-      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
-    </svg>
-  </div>
-  <p class="page-loader-text">Cargando...</p>
-</div>
-<script>
-  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
-  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
-  // carga para siempre.
-  setTimeout(() => {
-    const el = document.getElementById('pageLoader');
-    if (el) el.classList.add('page-loader-hidden');
-  }, 8000);
-</script>
+<script src="js/page-loader.js"></script>
 
 
 
-<nav class="navbar">
-  <div class="nav-brand" onclick="location.href='index.html'"><span data-icon="store" data-icon-size="20"></span> PaperCraft</div>
-  <div class="nav-spacer"></div>
-  <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Abrir menú">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="nav-links" id="navLinks">
-    <a href="index.html"><span data-icon="home" data-icon-size="16"></span> Inicio</a>
-    <span class="nav-sep" aria-hidden="true"></span>
-    <a href="shop.html"><span data-icon="bag" data-icon-size="16"></span> Tienda</a>
-    <span class="nav-sep" aria-hidden="true"></span>
-    <a href="games.html"><span data-icon="game" data-icon-size="16"></span> Juegos</a>
-    <span class="nav-sep" data-auth-only aria-hidden="true" style="display: none;"></span>
-    <a href="#" data-auth-only style="display: none;" onclick="openProfileModal(); return false;"><span data-icon="user" data-icon-size="16"></span> Mi Perfil</a>
-    <span class="nav-sep" data-admin-only aria-hidden="true" style="display: none;"></span>
-    <a href="admin.html" data-admin-only style="display: none;"><span data-icon="admin" data-icon-size="16"></span> Panel Admin</a>
-  </div>
-  <div class="navbar-auth-section">
-    <!-- Se completa con JavaScript -->
-  </div>
-</nav>
+<script src="js/navbar.js" data-pagina="cart" data-brand-size="20"></script>
 
 <div class="container">
   <h1><span data-icon="cart" data-icon-size="30"></span> Mi Carrito</h1>
@@ -489,9 +343,10 @@
 <!-- SCRIPTS -->
 <script src="js/utils/icons.js"></script>
 <script src="js/utils/currency.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/utils/card.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="js/invoice.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/dataManager.js"></script>
@@ -585,7 +440,7 @@
     }
     hint.style.display = 'block';
     hint.innerHTML = 'Tienes descuentos ganados en juegos: ' + activos.map(d =>
-      `<span onclick="usarCodigoDescuento('${d.code}')" style="text-decoration:underline; cursor:pointer; font-weight:700;">${d.code}</span> (${d.percentage}%)`
+      `<span onclick="usarCodigoDescuento('${escapeHtml(d.code)}')" style="text-decoration:underline; cursor:pointer; font-weight:700;">${escapeHtml(d.code)}</span> (${d.percentage}%)`
     ).join(', ') + ' — toca el código para usarlo';
   }
 
@@ -614,7 +469,7 @@
       <div class="cart-item">
         <div class="item-image">${Icons.svg(item.icon || 'package', { size: 30 })}</div>
         <div class="item-info">
-          <div class="item-name">${item.nombre}</div>
+          <div class="item-name">${escapeHtml(item.nombre)}</div>
           <div class="item-price">${formatCOP(item.precio)}</div>
         </div>
         <div class="item-controls">
@@ -834,7 +689,7 @@
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <label style="color: #00D9FF; font-weight: 700;">Número de tarjeta</label>
           <input type="text" id="card-number" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number" maxlength="19"
-                 oninput="formatCardNumber(this)"
+                 oninput="formatCardNumberInput(this)"
                  style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
         </div>
 
@@ -842,7 +697,7 @@
           <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
             <label style="color: #00D9FF; font-weight: 700;">Vencimiento</label>
             <input type="text" id="card-expiry" placeholder="MM/AA" inputmode="numeric" autocomplete="cc-exp" maxlength="5"
-                   oninput="formatCardExpiry(this)"
+                   oninput="formatCardExpiryInput(this)"
                    style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
@@ -865,17 +720,6 @@
     window.UIManager.openModal(content, 'Datos de pago');
   }
 
-  function formatCardNumber(input) {
-    const digits = input.value.replace(/\D/g, '').slice(0, 16);
-    input.value = digits.replace(/(.{4})/g, '$1 ').trim();
-  }
-
-  function formatCardExpiry(input) {
-    let digits = input.value.replace(/\D/g, '').slice(0, 4);
-    if (digits.length >= 3) digits = digits.slice(0, 2) + '/' + digits.slice(2);
-    input.value = digits;
-  }
-
   function procesarPago(event) {
     event.preventDefault();
 
@@ -886,47 +730,9 @@
       return;
     }
 
-    const nombre = document.getElementById('card-name').value.trim();
-    const numero = document.getElementById('card-number').value.replace(/\s/g, '');
-    const vencimiento = document.getElementById('card-expiry').value.trim();
-    const cvv = document.getElementById('card-cvv').value.trim();
-
-    // Lista por nombre los campos faltantes, igual que en el registro.
-    const faltantes = [];
-    if (!nombre) faltantes.push('Nombre en la tarjeta');
-    if (!numero) faltantes.push('Número de tarjeta');
-    if (!vencimiento) faltantes.push('Vencimiento');
-    if (!cvv) faltantes.push('CVV');
-    if (faltantes.length > 0) {
-      window.UIManager.toast(`Falta completar: ${faltantes.join(', ')}`, 'error');
-      return;
-    }
-
-    if (!/^\d{13,16}$/.test(numero)) {
-      window.UIManager.toast('El número de tarjeta no es válido', 'error');
-      return;
-    }
-
-    const expiryMatch = vencimiento.match(/^(\d{2})\/(\d{2})$/);
-    if (!expiryMatch) {
-      window.UIManager.toast('El vencimiento debe tener el formato MM/AA', 'error');
-      return;
-    }
-    const mes = parseInt(expiryMatch[1], 10);
-    const anio = 2000 + parseInt(expiryMatch[2], 10);
-    if (mes < 1 || mes > 12) {
-      window.UIManager.toast('El mes de vencimiento no es válido', 'error');
-      return;
-    }
-    const ahora = new Date();
-    const expiraFin = new Date(anio, mes, 0); // último día del mes de vencimiento
-    if (expiraFin < ahora) {
-      window.UIManager.toast('La tarjeta está vencida', 'error');
-      return;
-    }
-
-    if (!/^\d{3,4}$/.test(cvv)) {
-      window.UIManager.toast('El CVV no es válido', 'error');
+    const errorTarjeta = validarTarjeta(leerCamposTarjeta('card'), { revisarVencimiento: true });
+    if (errorTarjeta) {
+      window.UIManager.toast(errorTarjeta, 'error');
       return;
     }
 

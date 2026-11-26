@@ -1,0 +1,37 @@
+/* Base compartida por las páginas principales (index, shop, games,
+   cart, admin). Se carga después de app.css para mantener la misma
+   prioridad que tenía cuando estaba dentro del <style> de cada página. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* el fondo también va en <html>, no solo en <body> — si no, cuando el
+   modal bloquea el scroll (position: fixed en body), se asoma el
+   blanco por defecto del navegador en el hueco que queda */
+/* el fondo vive SOLO acá (no también en <body>): así <body> queda
+   transparente y la lluvia de números (z-index: -1) se sigue viendo
+   por delante del fondo, en vez de quedar tapada */
+html {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
+}
+
+/* Reglas que repetían igual varias páginas. Las que necesitan algo
+   distinto (index, admin) lo sobrescriben en su propio <style>. */
+body {
+  background: transparent;
+  color: #e8ecf1;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 5%;
+}
+
+footer {
+  background: rgba(10, 14, 39, 0.95);
+  border-top: 2px solid #00D9FF;
+  padding: 40px 5%;
+  text-align: center;
+  color: #a8b8cc;
+  margin-top: 60px;
+}

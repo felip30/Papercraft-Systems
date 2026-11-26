@@ -2,6 +2,8 @@
  * auth.js - login, registro y sesión con Supabase Auth + tabla "usuarios"
  * Requiere que window.supabaseClient ya exista (js/supabase-config.js debe cargar antes).
  */
+// Mensaje reutilizado cuando una acción requiere sesión
+const MSG_DEBES_INICIAR_SESION = 'Debes iniciar sesión';
 
 // hash SHA-256 para la respuesta de seguridad (nunca se guarda en texto plano)
 async function hashTexto(texto) {
@@ -386,7 +388,7 @@ class AuthManager {
   // reautentica antes de aplicar el cambio.
   async changeOwnPassword(currentPassword, newPassword, confirmPassword) {
     if (!this.profile) {
-      return { success: false, message: 'Debes iniciar sesión' };
+      return { success: false, message: MSG_DEBES_INICIAR_SESION };
     }
 
     if (!newPassword || !confirmPassword) {
@@ -471,7 +473,7 @@ class AuthManager {
   // se puede cambiar desde aquí: vive en Supabase Auth, no en esta tabla.
   async updateOwnProfile(updates) {
     if (!this.profile) {
-      return { success: false, message: 'Debes iniciar sesión' };
+      return { success: false, message: MSG_DEBES_INICIAR_SESION };
     }
 
     const payload = {};
@@ -509,7 +511,7 @@ class AuthManager {
   // actualiza el perfil con su URL pública.
   async uploadAvatar(file) {
     if (!this.profile) {
-      return { success: false, message: 'Debes iniciar sesión' };
+      return { success: false, message: MSG_DEBES_INICIAR_SESION };
     }
     if (!file.type.startsWith('image/')) {
       return { success: false, message: 'El archivo debe ser una imagen' };

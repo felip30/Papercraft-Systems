@@ -5,30 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tienda - PaperCraft Systems</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/main.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
-       modal bloquea el scroll (position: fixed en body), se asoma el
-       blanco por defecto del navegador en el hueco que queda */
-    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
-       transparente y la lluvia de números (z-index: -1) se sigue viendo
-       por delante del fondo, en vez de quedar tapada */
-    html {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
-    }
-    body {
-      background: transparent;
-      color: #e8ecf1;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
 
     /* NAVBAR, .btn, .btn-danger, .btn-logout: definidos en css/app.css */
-    .container { max-width: 1200px; margin: 0 auto; padding: 40px 5%; }
 
     h1 {
       font-size: 2.5rem;
@@ -175,14 +155,6 @@
       box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
     }
 
-    footer {
-      background: rgba(10, 14, 39, 0.95);
-      border-top: 2px solid #00D9FF;
-      padding: 40px 5%;
-      text-align: center;
-      color: #a8b8cc;
-      margin-top: 60px;
-    }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -193,60 +165,6 @@
       .products-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
     }
   
-    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
-       muestra apenas arranca la página y se oculta solo cuando los datos
-       ya están listos para mostrarse. */
-    #pageLoader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #0a0e27;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      transition: opacity 0.35s ease;
-    }
-    #pageLoader.page-loader-hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .page-loader-ring-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .page-loader-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 4px solid rgba(0, 217, 255, 0.15);
-      border-top-color: #00D9FF;
-      border-right-color: #FF006E;
-      animation: pageLoaderSpin 1s linear infinite;
-    }
-    .page-loader-fox {
-      width: 56px;
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
-    }
-    @keyframes pageLoaderSpin {
-      to { transform: rotate(360deg); }
-    }
-    .page-loader-text {
-      color: #a8b8cc;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .page-loader-ring { animation: none; }
-    }
-
     /* Título "TIENDA NEOCRAFT" con el mismo efecto de degradado animado
        que el título grande del inicio (el color va rotando solo). */
     .shop-title {
@@ -297,69 +215,11 @@
   </style>
 </head>
 <body>
-<div id="pageLoader">
-  <div class="page-loader-ring-wrap">
-    <div class="page-loader-ring"></div>
-    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
-      <!-- cola enroscada al frente -->
-      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
-      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
-      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
-      <!-- cuerpo sentado (más ancho abajo) -->
-      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
-      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
-      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
-      <!-- cabeza -->
-      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
-      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
-      <!-- orejas -->
-      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <!-- ojos cerrados (esperando tranquilo) -->
-      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
-      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
-      <!-- hocico -->
-      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
-      <!-- patas delanteras -->
-      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
-      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
-    </svg>
-  </div>
-  <p class="page-loader-text">Cargando...</p>
-</div>
-<script>
-  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
-  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
-  // carga para siempre.
-  setTimeout(() => {
-    const el = document.getElementById('pageLoader');
-    if (el) el.classList.add('page-loader-hidden');
-  }, 8000);
-</script>
+<script src="js/page-loader.js"></script>
 
 
 
-<nav class="navbar">
-  <div class="nav-brand" onclick="location.href='index.html'"><span data-icon="store" data-icon-size="20"></span> PaperCraft</div>
-  <div class="nav-spacer"></div>
-  <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Abrir menú">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="nav-links" id="navLinks">
-    <a href="index.html"><span data-icon="home" data-icon-size="16"></span> Inicio</a>
-    <span class="nav-sep" data-auth-only aria-hidden="true" style="display: none;"></span>
-    <a href="cart.html" data-auth-only style="display: none;"><span data-icon="cart" data-icon-size="16"></span> Carrito</a>
-    <span class="nav-sep" aria-hidden="true"></span>
-    <a href="games.html"><span data-icon="game" data-icon-size="16"></span> Juegos</a>
-    <span class="nav-sep" data-auth-only aria-hidden="true" style="display: none;"></span>
-    <a href="#" data-auth-only style="display: none;" onclick="openProfileModal(); return false;"><span data-icon="user" data-icon-size="16"></span> Mi Perfil</a>
-    <span class="nav-sep" data-admin-only aria-hidden="true" style="display: none;"></span>
-    <a href="admin.html" data-admin-only style="display: none;"><span data-icon="admin" data-icon-size="16"></span> Panel Admin</a>
-  </div>
-  <div class="navbar-auth-section">
-    <!-- Se completa con JavaScript -->
-  </div>
-</nav>
+<script src="js/navbar.js" data-pagina="shop" data-brand-size="20"></script>
 
 <div class="container">
   <h1 class="shop-title">TIENDA NEOCRAFT</h1>
@@ -384,7 +244,7 @@
     </div>
     <div class="filter-group">
       <label>Precio Máx. (COP)</label>
-      <input type="number" id="precioMax" value="500000" step="10000" onchange="filtrarProductos()">
+      <input type="number" id="precioMax" value="500000" step="10000" onchange="precioMaxTocado = true; filtrarProductos()">
     </div>
     <div class="filter-group">
       <label>Ordenar</label>
@@ -408,13 +268,14 @@
 <!-- SCRIPTS -->
 <script src="js/utils/icons.js"></script>
 <script src="js/utils/currency.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="js/invoice.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/dataManager.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/product-form.js"></script>
 
 <script>
   // Verificar autenticación y cargar página
@@ -453,22 +314,39 @@
     `;
   }
 
+  // true cuando el usuario cambia "Precio Máx." a mano; mientras sea false,
+  // el tope se ajusta solo al producto más caro para que ninguno quede oculto
+  let precioMaxTocado = false;
+
+  function ajustarPrecioMaxPorDefecto() {
+    if (precioMaxTocado) return;
+    const input = document.getElementById('precioMax');
+    const masCaro = window.DataManager.getProducts()
+      .reduce((max, p) => Math.max(max, Number(p.precio) || 0), 0);
+    const tope = Math.max(500000, Math.ceil(masCaro / 10000) * 10000);
+    input.value = tope;
+  }
+
   function filtrarProductos() {
     if (!window.AuthManager.isAuthenticated) {
       mostrarBloqueoSinSesion();
       return;
     }
 
+    ajustarPrecioMaxPorDefecto();
+
     const categoria = document.getElementById('categoria').value;
     const precioMax = parseInt(document.getElementById('precioMax').value) || 500000;
     const ordenar = document.getElementById('ordenar').value;
     const busqueda = (document.getElementById('searchProducto')?.value || '').trim().toLowerCase();
-    
+    const esAdmin = window.AuthManager.hasPermission('admin');
+
     let productos = window.DataManager.getProducts();
-    
-    // Filtrar
+
+    // Filtrar (los inactivos solo los ve el admin)
     productos = productos.filter(p => {
-      return (categoria === '' || p.categoria === categoria)
+      return (esAdmin || p.status === 'activo')
+        && (categoria === '' || p.categoria === categoria)
         && p.precio <= precioMax
         && (busqueda === '' || p.nombre.toLowerCase().includes(busqueda));
     });
@@ -483,13 +361,6 @@
     mostrarProductos(productos);
   }
 
-  // si la imagen falla, usa el ícono de respaldo (data-* evita mezclar comillas del SVG)
-  function handleProductImgError(imgEl) {
-    const container = imgEl.parentElement;
-    const iconName = container.getAttribute('data-fallback-icon') || 'package';
-    container.innerHTML = Icons.svg(iconName, { size: 40 });
-  }
-
   function mostrarProductos(items) {
     const grid = document.getElementById('productosGrid');
     const auth = window.AuthManager;
@@ -497,10 +368,10 @@
 
     grid.innerHTML = items.map(p => `
       <div class="product-card">
-        <div class="product-image" data-fallback-icon="${p.icon || 'package'}">${p.imagen ? `<img src="${escapeHtml(p.imagen)}" alt="${escapeHtml(p.nombre)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;" onerror="handleProductImgError(this)">` : Icons.svg(p.icon || 'package', { size: 40 })}</div>
+        <div class="product-image" data-fallback-icon="${escapeHtml(p.icon || 'package')}">${productImageHtml(p)}</div>
         <div class="product-info">
-          <div class="product-category">${p.categoria}</div>
-          <div class="product-name">${p.nombre}</div>
+          <div class="product-category">${escapeHtml(p.categoria)}</div>
+          <div class="product-name">${escapeHtml(p.nombre)}</div>
           ${p.description ? `<div class="product-description">${escapeHtml(p.description)}</div>` : ''}
           <div class="product-price">${formatCOP(p.precio)}</div>
           <div class="product-stock">Stock: ${p.stock}</div>
@@ -541,139 +412,35 @@
   }
 
   function openAddProductModal() {
-    const form = `
-      <form onsubmit="handleAddProduct(event)" style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Nombre del producto</label>
-          <input type="text" id="new-producto-nombre" placeholder="Ej: Teclado Mecánico RGB" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Categoría</label>
-          <select id="new-producto-categoria" required style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-            <option value="papelería">Papelería</option>
-            <option value="tecnología">Tecnología</option>
-          </select>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Precio</label>
-          <input type="number" id="new-producto-precio" placeholder="52000" step="1000" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Descripción</label>
-          <textarea id="new-producto-descripcion" rows="3" placeholder="Descripción del producto (se muestra en la tienda)"
-                    style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;"></textarea>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Stock</label>
-          <input type="number" id="new-producto-stock" placeholder="50" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">URL de imagen (opcional)</label>
-          <input type="text" id="new-producto-imagen" placeholder="https://..."
-                 oninput="previewProductoImagen('new-producto-imagen-preview', this.value)"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-          <p style="color:#6b7a90; font-size:0.72rem;">Si la dejas vacía, se muestra el ícono en la tienda.</p>
-          <img id="new-producto-imagen-preview" style="max-width:100%; max-height:120px; border-radius:8px; display:none;" onerror="this.style.display='none';" onload="this.style.display='block';">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Icono</label>
-          <select id="new-producto-icon"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-            <option value="package">Paquete</option>
-            <option value="notebook">Cuaderno</option>
-            <option value="book">Libro</option>
-            <option value="palette">Paleta</option>
-            <option value="document">Documento</option>
-            <option value="gamepad">Tecnología</option>
-            <option value="target">Precisión</option>
-            <option value="bell">Audio</option>
-            <option value="gift">Regalo</option>
-            <option value="star">Destacado</option>
-          </select>
-        </div>
-        <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">
-          Agregar Producto
-        </button>
-      </form>
-    `;
+    const form = buildProductForm({
+      prefijo: 'new-producto',
+      color: '#00D9FF',
+      onSubmit: 'handleAddProduct(event)',
+      etiquetaNombre: 'Nombre del producto',
+      textoBoton: 'Agregar Producto',
+      estiloBoton: 'width: 100%; padding: 12px; margin-top: 10px;'
+    });
     window.UIManager.openModal(form, 'Nuevo Producto');
-  }
-
-  // Muestra una vista previa mientras se escribe la URL de la imagen; si
-  // no carga (URL rota o vacía), la vista previa simplemente se oculta.
-  function previewProductoImagen(previewId, url) {
-    const img = document.getElementById(previewId);
-    if (!img) return;
-    if (!url) {
-      img.style.display = 'none';
-      img.removeAttribute('src');
-      return;
-    }
-    img.src = url;
   }
 
   function openEditProductModal(productId) {
     const product = window.DataManager.getProductById(productId);
-    const form = `
-      <form onsubmit="handleEditProduct(${productId}, event)" style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Nombre</label>
-          <input type="text" id="edit-producto-nombre" value="${product.nombre}" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Categoría</label>
-          <select id="edit-producto-categoria" required style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-            <option value="papelería" ${product.categoria === 'papelería' ? 'selected' : ''}>Papelería</option>
-            <option value="tecnología" ${product.categoria === 'tecnología' ? 'selected' : ''}>Tecnología</option>
-          </select>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Precio</label>
-          <input type="number" id="edit-producto-precio" value="${product.precio}" step="1000" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Descripción</label>
-          <textarea id="edit-producto-descripcion" rows="3" placeholder="Descripción del producto (se muestra en la tienda)"
-                    style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${escapeHtml(product.description || '')}</textarea>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">Stock</label>
-          <input type="number" id="edit-producto-stock" value="${product.stock}" required 
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #00D9FF; font-weight: 700;">URL de imagen (opcional)</label>
-          <input type="text" id="edit-producto-imagen" value="${escapeHtml(product.imagen || '')}" placeholder="https://..."
-                 oninput="previewProductoImagen('edit-producto-imagen-preview', this.value)"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 6px;">
-          <p style="color:#6b7a90; font-size:0.72rem;">Si la dejas vacía, se muestra el ícono en la tienda.</p>
-          <img id="edit-producto-imagen-preview" src="${escapeHtml(product.imagen || '')}" style="max-width:100%; max-height:120px; border-radius:8px; ${product.imagen ? '' : 'display:none;'}" onerror="this.style.display='none';" onload="this.style.display='block';">
-        </div>
-        <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">
-           Guardar Cambios
-        </button>
-      </form>
-    `;
+    const form = buildProductForm({
+      prefijo: 'edit-producto',
+      color: '#00D9FF',
+      onSubmit: `handleEditProduct(${Number(productId)}, event)`,
+      producto: product,
+      conIcono: false,
+      textoBoton: ' Guardar Cambios',
+      estiloBoton: 'width: 100%; padding: 12px; margin-top: 10px;'
+    });
     window.UIManager.openModal(form, ' Editar Producto');
   }
 
   async function handleAddProduct(event) {
     event.preventDefault();
     try {
-      const product = {
-        nombre: document.getElementById('new-producto-nombre').value,
-        categoria: document.getElementById('new-producto-categoria').value,
-        precio: document.getElementById('new-producto-precio').value,
-        stock: document.getElementById('new-producto-stock').value,
-        icon: document.getElementById('new-producto-icon').value || 'package',
-        imagen: document.getElementById('new-producto-imagen').value.trim(),
-        description: document.getElementById('new-producto-descripcion').value.trim()
-      };
+      const product = readProductForm('new-producto');
       await window.DataManager.addProduct(product);
       window.UIManager.closeModal();
       window.UIManager.toast('Producto agregado', 'success');
@@ -685,14 +452,7 @@
 
   async function handleEditProduct(productId, event) {
     event.preventDefault();
-    const updates = {
-      nombre: document.getElementById('edit-producto-nombre').value,
-      categoria: document.getElementById('edit-producto-categoria').value,
-      precio: document.getElementById('edit-producto-precio').value,
-      stock: document.getElementById('edit-producto-stock').value,
-      imagen: document.getElementById('edit-producto-imagen').value.trim(),
-      description: document.getElementById('edit-producto-descripcion').value.trim()
-    };
+    const updates = readProductForm('edit-producto', false);
     const updated = await window.DataManager.updateProduct(productId, updates);
     if (!updated) {
       window.UIManager.toast('No se pudo actualizar el producto', 'error');

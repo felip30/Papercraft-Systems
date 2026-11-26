@@ -2,6 +2,9 @@
  * GESTOR DE DATOS AVANZADO - PaperCraft Systems v3.1
  * Maneja productos, usuarios, juegos, carrito, pedidos y estadísticas
  */
+// Categorías del catálogo
+const CATEGORIA_TECNOLOGIA = 'tecnología';
+const CATEGORIA_PAPELERIA = 'papelería';
 
 class DataManager {
   constructor() {
@@ -49,6 +52,7 @@ class DataManager {
       this.loadProductsFromSupabase(),
       this.loadVaultGamesFromSupabase()
     ]);
+    this._iniciarCatalogoEnTiempoReal();
 
     // Pedidos, puntajes y descuentos son personales — solo tiene sentido
     // traerlos si hay sesión iniciada, y hay que esperar a que
@@ -78,7 +82,7 @@ class DataManager {
       {
         id: 1,
         nombre: 'Cuaderno Premium A4',
-        categoria: 'papelería',
+        categoria: CATEGORIA_PAPELERIA,
         precio: 52000,
         stock: 45,
         originalStock: 45,
@@ -89,7 +93,7 @@ class DataManager {
       {
         id: 2,
         nombre: 'Agenda 2024',
-        categoria: 'papelería',
+        categoria: CATEGORIA_PAPELERIA,
         precio: 76000,
         stock: 20,
         originalStock: 20,
@@ -100,7 +104,7 @@ class DataManager {
       {
         id: 3,
         nombre: 'Set de Colores 48pc',
-        categoria: 'papelería',
+        categoria: CATEGORIA_PAPELERIA,
         precio: 104000,
         stock: 30,
         originalStock: 30,
@@ -111,7 +115,7 @@ class DataManager {
       {
         id: 4,
         nombre: 'Resma Papel Blanco',
-        categoria: 'papelería',
+        categoria: CATEGORIA_PAPELERIA,
         precio: 36000,
         stock: 100,
         originalStock: 100,
@@ -124,7 +128,7 @@ class DataManager {
       {
         id: 5,
         nombre: 'Teclado Mecánico RGB',
-        categoria: 'tecnología',
+        categoria: CATEGORIA_TECNOLOGIA,
         precio: 360000,
         stock: 3, // Bajo stock
         originalStock: 15,
@@ -135,7 +139,7 @@ class DataManager {
       {
         id: 6,
         nombre: 'Mouse Inalámbrico Pro',
-        categoria: 'tecnología',
+        categoria: CATEGORIA_TECNOLOGIA,
         precio: 144000,
         stock: 25,
         originalStock: 25,
@@ -146,7 +150,7 @@ class DataManager {
       {
         id: 7,
         nombre: 'Headphones Bluetooth',
-        categoria: 'tecnología',
+        categoria: CATEGORIA_TECNOLOGIA,
         precio: 240000,
         stock: 18,
         originalStock: 18,
@@ -157,7 +161,7 @@ class DataManager {
       {
         id: 8,
         nombre: 'Soporte Teléfono Ajustable',
-        categoria: 'tecnología',
+        categoria: CATEGORIA_TECNOLOGIA,
         precio: 64000,
         stock: 50,
         originalStock: 50,
@@ -174,13 +178,20 @@ class DataManager {
     window.dispatchEvent(new Event('productsUpdated'));
   }
 
-  async loadProductsFromSupabase() {
+  // silencioso = true en las recargas automáticas (tiempo real / foco):
+  // si fallan, se conserva lo que ya está en pantalla en vez de cambiar
+  // el catálogo por los productos de respaldo.
+  async loadProductsFromSupabase({ silencioso = false } = {}) {
     const { data, error } = await window.supabaseClient
       .from('productos')
       .select('*')
       .order('id', { ascending: true });
 
     if (error) {
+      if (silencioso) {
+        console.warn('No se pudo refrescar el catálogo:', error.message);
+        return;
+      }
       console.error('Error al cargar productos desde Supabase, usando datos de respaldo:', error.message);
       this.products = this._getFallbackProducts();
       return;
@@ -202,6 +213,52 @@ class DataManager {
     }));
 
     window.dispatchEvent(new Event('productsUpdated'));
+  }
+
+  // ======================================
+  // CATÁLOGO EN TIEMPO REAL
+  // Cuando el admin agrega, edita, activa/desactiva o borra un producto
+  // (o cambia el stock por una compra), todas las páginas abiertas se
+  // actualizan solas, sin recargar. Requiere sql/30-realtime-productos.sql.
+  // ======================================
+
+  _iniciarCatalogoEnTiempoReal() {
+    if (this._catalogoTiempoRealIniciado) return;
+    this._catalogoTiempoRealIniciado = true;
+
+    // Varias notificaciones seguidas (p. ej. una compra que baja el stock
+    // de 3 productos) se agrupan en una sola recarga.
+    const refrescar = () => {
+      clearTimeout(this._refrescoProductosTimer);
+      this._refrescoProductosTimer = setTimeout(() => {
+        this.loadProductsFromSupabase({ silencioso: true });
+      }, 150);
+    };
+
+    this._realtimeProductosActivo = false;
+    try {
+      window.supabaseClient
+        .channel('catalogo-productos')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, refrescar)
+        .subscribe(status => {
+          this._realtimeProductosActivo = (status === 'SUBSCRIBED');
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.warn('Realtime de productos no disponible (' + status + '). Se usa recarga periódica.');
+          }
+        });
+    } catch (e) {
+      console.warn('No se pudo iniciar Realtime de productos:', e.message);
+    }
+
+    // Respaldo: al volver a la pestaña se refresca siempre, y si Realtime
+    // no está conectado se revisa cada 10 segundos mientras la pestaña
+    // está visible.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refrescar();
+    });
+    setInterval(() => {
+      if (!this._realtimeProductosActivo && document.visibilityState === 'visible') refrescar();
+    }, 10000);
   }
 
   getProducts() {
@@ -758,7 +815,13 @@ class DataManager {
    * y genera un código canjeable en el carrito.
    */
   async addUserDiscount(userId, percentage, source = 'ruleta') {
-    const code = `${source.toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-5)}`;
+    // 5 caracteres al azar (criptográficamente seguros): un código basado en
+    // la hora se podía adivinar.
+    const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const bytes = new Uint8Array(5);
+    window.crypto.getRandomValues(bytes);
+    const sufijo = Array.from(bytes, b => ALFABETO[b % ALFABETO.length]).join('');
+    const code = `${source.toUpperCase()}-${sufijo}`;
 
     const { data, error } = await window.supabaseClient
       .from('descuentos')

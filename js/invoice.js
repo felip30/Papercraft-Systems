@@ -51,7 +51,13 @@ function svgToPngDataUrl(svgPath, size) {
   });
 }
 
-async function generarFacturaPDF(order, user) {
+// y (en mm) donde termina la línea divisoria del encabezado común
+const PDF_ENCABEZADO_FIN = 36;
+
+// Crea el PDF A4 con el encabezado común de la tienda (logo del zorro,
+// nombre, eslogan y línea divisoria). Lo usan la factura y el comprobante
+// de cancelación. "documento" solo se usa en el aviso si el logo no carga.
+async function crearPdfConEncabezado(documento) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -63,7 +69,7 @@ async function generarFacturaPDF(order, user) {
     const logoDataUrl = await svgToPngDataUrl('assets/favicon.svg', 128);
     doc.addImage(logoDataUrl, 'PNG', margin, y - 6, 16, 16);
   } catch (e) {
-    console.warn('No se pudo cargar el logo para la factura:', e);
+    console.warn(`No se pudo cargar el logo para ${documento}:`, e);
   }
 
   doc.setFont('helvetica', 'bold');
@@ -78,7 +84,12 @@ async function generarFacturaPDF(order, user) {
   doc.setDrawColor(200, 200, 210);
   y += 16;
   doc.line(margin, y, pageWidth - margin, y);
-  y += 10;
+  return { doc, pageWidth, margin };
+}
+
+async function generarFacturaPDF(order, user) {
+  const { doc, pageWidth, margin } = await crearPdfConEncabezado('la factura');
+  let y = PDF_ENCABEZADO_FIN + 10;
 
   // Datos de la factura
   doc.setFontSize(14);
@@ -222,32 +233,8 @@ async function descargarFacturaPedido(orderId) {
 // descargar desde el Panel Admin (sub-sección de cancelaciones en
 // Historial de Pedidos).
 async function generarComprobanteCancelacion(order, user) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 18;
-  let y = 20;
-
-  try {
-    const logoDataUrl = await svgToPngDataUrl('assets/favicon.svg', 128);
-    doc.addImage(logoDataUrl, 'PNG', margin, y - 6, 16, 16);
-  } catch (e) {
-    console.warn('No se pudo cargar el logo para el comprobante:', e);
-  }
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.setTextColor(20, 20, 30);
-  doc.text('PaperCraft Systems', margin + 20, y);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 100, 110);
-  doc.text('Diseña, Construye, Domina', margin + 20, y + 6);
-
-  doc.setDrawColor(200, 200, 210);
-  y += 16;
-  doc.line(margin, y, pageWidth - margin, y);
-  y += 12;
+  const { doc, pageWidth, margin } = await crearPdfConEncabezado('el comprobante');
+  let y = PDF_ENCABEZADO_FIN + 12;
 
   // Encabezado del comprobante, destacado en rojo/rosa para diferenciarlo
   // claramente de una factura normal.

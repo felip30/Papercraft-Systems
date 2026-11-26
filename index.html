@@ -5,27 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PaperCraft Systems - Diseña, Construye, Domina</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/main.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
-       modal bloquea el scroll (position: fixed en body), se asoma el
-       blanco por defecto del navegador en el hueco que queda */
-    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
-       transparente y la lluvia de números (z-index: -1) se sigue viendo
-       por delante del fondo, en vez de quedar tapada */
-    html {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
-    }
     body {
       background: transparent;
       color: #e8ecf1;
@@ -469,7 +450,7 @@
       border-top: 2px solid #00D9FF;
       padding: 40px 5%;
       text-align: center;
-      color: #a8b8cc;
+      color: #a8b8cc;      margin-top: 0;
     }
 
     .footer-social a {
@@ -602,102 +583,10 @@
       .fox-info-hint { animation: none; opacity: 1; transform: translateX(-50%) scale(1); }
     }
   
-    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
-       muestra apenas arranca la página y se oculta solo cuando los datos
-       ya están listos para mostrarse. */
-    #pageLoader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #0a0e27;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      transition: opacity 0.35s ease;
-    }
-    #pageLoader.page-loader-hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .page-loader-ring-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .page-loader-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 4px solid rgba(0, 217, 255, 0.15);
-      border-top-color: #00D9FF;
-      border-right-color: #FF006E;
-      animation: pageLoaderSpin 1s linear infinite;
-    }
-    .page-loader-fox {
-      width: 56px;
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
-    }
-    @keyframes pageLoaderSpin {
-      to { transform: rotate(360deg); }
-    }
-    .page-loader-text {
-      color: #a8b8cc;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .page-loader-ring { animation: none; }
-    }
-
   </style>
 </head>
 <body>
-<div id="pageLoader">
-  <div class="page-loader-ring-wrap">
-    <div class="page-loader-ring"></div>
-    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
-      <!-- cola enroscada al frente -->
-      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
-      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
-      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
-      <!-- cuerpo sentado (más ancho abajo) -->
-      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
-      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
-      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
-      <!-- cabeza -->
-      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
-      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
-      <!-- orejas -->
-      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <!-- ojos cerrados (esperando tranquilo) -->
-      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
-      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
-      <!-- hocico -->
-      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
-      <!-- patas delanteras -->
-      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
-      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
-    </svg>
-  </div>
-  <p class="page-loader-text">Cargando...</p>
-</div>
-<script>
-  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
-  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
-  // carga para siempre.
-  setTimeout(() => {
-    const el = document.getElementById('pageLoader');
-    if (el) el.classList.add('page-loader-hidden');
-  }, 8000);
-</script>
+<script src="js/page-loader.js"></script>
 
 
 
@@ -899,13 +788,15 @@
 <!-- SCRIPTS -->
 <script src="js/utils/icons.js"></script>
 <script src="js/utils/currency.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="js/utils/card.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="js/invoice.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/dataManager.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/product-form.js"></script>
 
 <script>
   // Login, Registro, Recuperación de contraseña, Mi Perfil y Logout
@@ -937,7 +828,12 @@
   updateFeaturesCounterRotation(); // estado inicial, apenas carga la página
 
   function loadProductsPreview() {
-    const allProducts = window.DataManager.getProducts();
+    // Solo activos y del más reciente al más antiguo, para que lo que el
+    // admin agrega aparezca de primero en la vista previa.
+    const allProducts = window.DataManager.getProducts()
+      .filter(p => p.status === 'activo')
+      .slice()
+      .sort((a, b) => b.id - a.id);
     // Mezcla real: 2 productos de papelería + 2 de tecnología, para que la
     // vista previa siempre muestre variedad de ambas categorías.
     const papeleria = allProducts.filter(p => p.categoria === 'papelería').slice(0, 2);
@@ -947,20 +843,13 @@
     
     grid.innerHTML = products.map(p => `
       <div class="product-card" onclick="handleProductPreviewClick()" style="cursor:pointer;">
-        <div class="product-image" data-fallback-icon="${p.icon || 'package'}">${p.imagen ? `<img src="${escapeHtml(p.imagen)}" alt="${escapeHtml(p.nombre)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;" onerror="handleProductImgError(this)">` : Icons.svg(p.icon || 'package', { size: 40 })}</div>
+        <div class="product-image" data-fallback-icon="${escapeHtml(p.icon || 'package')}">${productImageHtml(p)}</div>
         <div class="product-info">
-          <div class="product-name">${p.nombre}</div>
+          <div class="product-name">${escapeHtml(p.nombre)}</div>
           <div class="product-price">${formatCOP(p.precio)}</div>
         </div>
       </div>
     `).join('');
-  }
-
-  // si la imagen falla, usa el ícono de respaldo (data-* evita mezclar comillas del SVG)
-  function handleProductImgError(imgEl) {
-    const container = imgEl.parentElement;
-    const iconName = container.getAttribute('data-fallback-icon') || 'package';
-    container.innerHTML = Icons.svg(iconName, { size: 40 });
   }
 
   function handleProductPreviewClick() {
@@ -1012,6 +901,8 @@
     window.UIManager.updateUIByRole();
     loadProductsPreview();
     loadFooterSocial();
+    // si el catálogo cambia (tiempo real), refresca la vista previa
+    window.addEventListener('productsUpdated', loadProductsPreview);
   });
 
   function handleFeaturePanelAdminClick() {
@@ -1054,7 +945,7 @@
           ${games.map(g => `
             <button type="button" onclick="switchVaultGamerTab(${g.id})" id="vault-tab-btn-${g.id}"
                     class="vault-gamer-tab-btn ${g.id === activeId ? 'active' : ''}">
-              ${g.titulo}
+              ${escapeHtml(g.titulo)}
             </button>
           `).join('')}
         </div>
@@ -1080,23 +971,25 @@
     const panel = document.getElementById('vault-gamer-panel');
     if (!game || !panel) return;
 
+    // el color va dentro de style="": solo se acepta un hex válido
+    const color = /^#[0-9a-fA-F]{3,8}$/.test(game.color || '') ? game.color : '#00D9FF';
     const cover = game.imagen
-      ? `<img src="${game.imagen}" alt="${game.titulo}" style="width:100%; height:180px; object-fit:cover; border-radius:10px; display:block;">`
-      : `<div style="width:100%; height:180px; border-radius:10px; background:linear-gradient(135deg, ${game.color}33, ${game.color}0d); border:1px solid ${game.color}; display:flex; align-items:center; justify-content:center; color:${game.color};">
-           <span data-icon="${game.icon}" data-icon-size="60"></span>
+      ? `<img src="${escapeHtml(game.imagen)}" alt="${escapeHtml(game.titulo)}" style="width:100%; height:180px; object-fit:cover; border-radius:10px; display:block;">`
+      : `<div style="width:100%; height:180px; border-radius:10px; background:linear-gradient(135deg, ${color}33, ${color}0d); border:1px solid ${color}; display:flex; align-items:center; justify-content:center; color:${color};">
+           <span data-icon="${escapeHtml(game.icon)}" data-icon-size="60"></span>
          </div>`;
 
     panel.innerHTML = `
       ${cover}
       <div style="margin-top:16px;">
-        <p style="color:#00D9FF; font-weight:800; font-size:1.2rem;">${game.titulo}</p>
-        <p style="color:#a8b8cc; font-size:0.8rem; margin-bottom:12px;">${game.estudio} &middot; ${game.categoria}</p>
+        <p style="color:#00D9FF; font-weight:800; font-size:1.2rem;">${escapeHtml(game.titulo)}</p>
+        <p style="color:#a8b8cc; font-size:0.8rem; margin-bottom:12px;">${escapeHtml(game.estudio)} &middot; ${escapeHtml(game.categoria)}</p>
 
-        <p style="color:#e8ecf1; font-size:0.9rem; line-height:1.6; margin-bottom:16px;">${game.descripcionDetallada || game.resumen}</p>
+        <p style="color:#e8ecf1; font-size:0.9rem; line-height:1.6; margin-bottom:16px;">${escapeHtml(game.descripcionDetallada || game.resumen)}</p>
 
         <p style="color:#39FF14; font-weight:700; font-size:0.85rem; margin-bottom:8px;">Tutorial: cómo avanzar</p>
         <ul style="color:#a8b8cc; font-size:0.85rem; line-height:1.7; padding-left:18px; margin:0;">
-          ${(game.tutorial || []).map(t => `<li>${t}</li>`).join('')}
+          ${(game.tutorial || []).map(t => `<li>${escapeHtml(t)}</li>`).join('')}
         </ul>
       </div>
     `;
@@ -1177,7 +1070,7 @@
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <label style="color: #00D9FF; font-weight: 700;">Número de tarjeta</label>
           <input type="text" id="preview-card-number" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number" maxlength="19"
-                 oninput="formatPreviewCardNumber(this)"
+                 oninput="formatCardNumberInput(this)"
                  style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
         </div>
 
@@ -1185,7 +1078,7 @@
           <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
             <label style="color: #00D9FF; font-weight: 700;">Vencimiento</label>
             <input type="text" id="preview-card-expiry" placeholder="MM/AA" inputmode="numeric" autocomplete="cc-exp" maxlength="5"
-                   oninput="formatPreviewCardExpiry(this)"
+                   oninput="formatCardExpiryInput(this)"
                    style="padding: 12px; background: rgba(15, 24, 41, 0.8); border: 2px solid #00D9FF; color: #e8ecf1; border-radius: 8px; font-size: 1rem;">
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
@@ -1208,48 +1101,12 @@
     window.UIManager.openModal(content, 'Pagos Seguros');
   }
 
-  function formatPreviewCardNumber(input) {
-    const digits = input.value.replace(/\D/g, '').slice(0, 16);
-    input.value = digits.replace(/(.{4})/g, '$1 ').trim();
-  }
-
-  function formatPreviewCardExpiry(input) {
-    let digits = input.value.replace(/\D/g, '').slice(0, 4);
-    if (digits.length >= 3) digits = digits.slice(0, 2) + '/' + digits.slice(2);
-    input.value = digits;
-  }
-
   function procesarPagoPreview(event) {
     event.preventDefault();
 
-    const nombre = document.getElementById('preview-card-name').value.trim();
-    const numero = document.getElementById('preview-card-number').value.replace(/\s/g, '');
-    const vencimiento = document.getElementById('preview-card-expiry').value.trim();
-    const cvv = document.getElementById('preview-card-cvv').value.trim();
-
-    const faltantes = [];
-    if (!nombre) faltantes.push('Nombre en la tarjeta');
-    if (!numero) faltantes.push('Número de tarjeta');
-    if (!vencimiento) faltantes.push('Vencimiento');
-    if (!cvv) faltantes.push('CVV');
-    if (faltantes.length > 0) {
-      window.UIManager.toast(`Falta completar: ${faltantes.join(', ')}`, 'error');
-      return;
-    }
-
-    if (!/^\d{13,16}$/.test(numero)) {
-      window.UIManager.toast('El número de tarjeta no es válido', 'error');
-      return;
-    }
-
-    const expiryMatch = vencimiento.match(/^(\d{2})\/(\d{2})$/);
-    if (!expiryMatch) {
-      window.UIManager.toast('El vencimiento debe tener el formato MM/AA', 'error');
-      return;
-    }
-
-    if (!/^\d{3,4}$/.test(cvv)) {
-      window.UIManager.toast('El CVV no es válido', 'error');
+    const errorTarjeta = validarTarjeta(leerCamposTarjeta('preview-card'));
+    if (errorTarjeta) {
+      window.UIManager.toast(errorTarjeta, 'error');
       return;
     }
 
@@ -1428,6 +1285,9 @@
   }
 
   // señal RGB viaja del chip al pin (línea -> punto -> etiqueta), después ejecuta la acción
+  // clase del pulso RGB del chip central (se usa en varias funciones)
+  const CHIP_SIGNAL_CENTER = 'chip-signal-center';
+
   function fireChipPin(pinEl, index, action) {
     const chipBody = document.getElementById('chip-body-center');
     const line = document.getElementById(`spider-line-${index}`);
@@ -1436,11 +1296,11 @@
 
     [chipBody, line, dot, label].forEach(el => {
       if (!el) return;
-      el.classList.remove('chip-signal-center', 'chip-signal-leg', 'chip-signal-dot', 'chip-signal-label');
+      el.classList.remove(CHIP_SIGNAL_CENTER, 'chip-signal-leg', 'chip-signal-dot', 'chip-signal-label');
       void el.getBoundingClientRect(); // fuerza reflow para poder reiniciar la animación si se hace doble clic
     });
 
-    if (chipBody) chipBody.classList.add('chip-signal-center');
+    if (chipBody) chipBody.classList.add(CHIP_SIGNAL_CENTER);
     if (line) line.classList.add('chip-signal-leg');
     if (dot) dot.classList.add('chip-signal-dot');
     if (label) label.classList.add('chip-signal-label');
@@ -1451,9 +1311,9 @@
   // El propio chip central también responde con el mismo pulso RGB antes
   // de redirigir al inicio.
   function fireChipCenter(chipEl) {
-    chipEl.classList.remove('chip-signal-center');
-    void chipEl.offsetWidth;
-    chipEl.classList.add('chip-signal-center');
+    chipEl.classList.remove(CHIP_SIGNAL_CENTER);
+    chipEl.getBoundingClientRect(); // fuerza un reflow para reiniciar la animación
+    chipEl.classList.add(CHIP_SIGNAL_CENTER);
 
     setTimeout(() => { location.href = chipEl.getAttribute('href'); }, 480);
     return false;

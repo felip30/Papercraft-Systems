@@ -39,6 +39,7 @@ hace cada uno, usa esta lista como referencia.
 | 27 | `27-redes-sociales-flexible.sql` | Reemplaza la tabla anterior por una lista flexible: el admin puede agregar cualquier cantidad de redes, correos o teléfonos, no solo Instagram/WhatsApp. |
 | 28 | `28-fix-orden-redes-sociales.sql` | Corrección: la columna `orden` de `redes_sociales` pasa de `INTEGER` a `BIGINT` (el panel guarda ahí un timestamp, que no cabía en `INTEGER`). |
 | 29 | `29-notificaciones-pedido.sql` | Columna `notificar_pedidos` en `usuarios`: preferencia para recibir un correo cuando cambia el estado de un pedido (requiere también desplegar la Edge Function `supabase/functions/notificar-pedido`). |
+| 30 | `30-realtime-productos.sql` | Activa Supabase Realtime en `productos`: lo que el admin agrega, edita o borra aparece al instante en la tienda, el inicio y el panel, sin recargar. |
 
 ## Notas
 

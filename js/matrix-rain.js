@@ -15,6 +15,19 @@
   const PURPLE = '#B24BF3';       // morado neón, coherente con --purpura del proyecto
   const PURPLE_BRIGHT = '#E0AFFF'; // cabeza de cada columna, más clara/brillante
 
+  // Número aleatorio en [0, 1) con la API criptográfica del navegador
+  // (Sonar marca aleatorio() como hotspot de seguridad). Se piden los
+  // valores en bloque para no llamar a la API en cada carácter dibujado.
+  const randomBuffer = new Uint32Array(512);
+  let randomIndex = randomBuffer.length;
+  function aleatorio() {
+    if (randomIndex >= randomBuffer.length) {
+      window.crypto.getRandomValues(randomBuffer);
+      randomIndex = 0;
+    }
+    return randomBuffer[randomIndex++] / 0x100000000;
+  }
+
   let columns = 0;
   let drops = [];
 
@@ -22,7 +35,7 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     columns = Math.floor(canvas.width / FONT_SIZE);
-    drops = new Array(columns).fill(0).map(() => Math.floor(Math.random() * -50));
+    drops = new Array(columns).fill(0).map(() => Math.floor(aleatorio() * -50));
   }
 
   function draw() {
@@ -34,18 +47,18 @@
     ctx.font = `${FONT_SIZE}px 'Courier New', monospace`;
 
     for (let i = 0; i < drops.length; i++) {
-      const char = CHARS[Math.floor(Math.random() * CHARS.length)];
+      const char = CHARS[Math.floor(aleatorio() * CHARS.length)];
       const x = i * FONT_SIZE;
       const y = drops[i] * FONT_SIZE;
 
       // El carácter en la punta de cada columna brilla más que el resto de la estela.
-      ctx.fillStyle = Math.random() > 0.94 ? PURPLE_BRIGHT : PURPLE;
+      ctx.fillStyle = aleatorio() > 0.94 ? PURPLE_BRIGHT : PURPLE;
       ctx.shadowColor = PURPLE;
       ctx.shadowBlur = 6;
       ctx.fillText(char, x, y);
       ctx.shadowBlur = 0;
 
-      if (y > canvas.height && Math.random() > 0.975) {
+      if (y > canvas.height && aleatorio() > 0.975) {
         drops[i] = 0;
       }
       drops[i]++;

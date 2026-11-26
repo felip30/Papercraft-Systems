@@ -14,6 +14,10 @@
  *    DataManager.addUserDiscount(), visible en "Mis Descuentos" y aplicable
  *    en el carrito de compras.
  */
+// Atributos/clases de las cartas del juego de Memoria
+const ATTR_MEMORIA_EMPAREJADA = 'data-matched';
+const ATTR_MEMORIA_VOLTEADA = 'data-flipped';
+const CLASE_MEMORIA_VOLTEADA = 'is-flipped';
 
 const RULETA_SEGMENTOS = [
   { premio: 50 }, // 0°   - 60°  (centro 30°)
@@ -147,6 +151,27 @@ const GamesController = {
 
   // ==================== HISTORIAL ====================
 
+  // Guarda la partida en el historial; si falla, avisa pero no corta el juego.
+  async _registrarPartida(user, juego, puntaje, premio, etiquetaLog) {
+    try {
+      await window.DataManager.recordGameScore(user.userId, user.username, juego, puntaje, premio);
+    } catch (err) {
+      console.error(`No se pudo guardar el puntaje ${etiquetaLog}:`, err.message);
+      window.UIManager.toast('No se pudo registrar la partida: ' + err.message, 'error');
+    }
+  },
+
+  // Suma los créditos ganados sin bloquear la animación del juego.
+  _sumarCreditos(user, creditos) {
+    const auth = window.AuthManager;
+    auth.updateUserCredits(user.userId, creditos)
+      .then(updated => { if (updated) auth.profile.credits = updated.credits; })
+      .catch(err => {
+        console.error('No se pudieron sumar los créditos:', err.message);
+        window.UIManager.toast('No se pudieron sumar los créditos: ' + err.message, 'error');
+      });
+  },
+
   renderMisPuntajes() {
     const auth = window.AuthManager;
     const section = document.getElementById('misPuntajesSection');
@@ -167,9 +192,9 @@ const GamesController = {
     const tbody = document.getElementById('misPuntajesTable');
     tbody.innerHTML = scores.slice().reverse().map(s => `
       <tr>
-        <td>${s.game}</td>
-        <td>${s.score}</td>
-        <td>${s.prize}</td>
+        <td>${escapeHtml(s.game)}</td>
+        <td>${escapeHtml(s.score)}</td>
+        <td>${escapeHtml(s.prize)}</td>
         <td>${new Date(s.date).toLocaleString('es-ES')}</td>
       </tr>
     `).join('');
@@ -193,7 +218,7 @@ const GamesController = {
 
     section.style.display = 'block';
     document.getElementById('misDescuentosList').innerHTML = activos.map(d => `
-      <span class="discount-chip">${Icons.svg('tag', { size: 14 })} ${d.percentage}% &mdash; código ${d.code}</span>
+      <span class="discount-chip">${Icons.svg('tag', { size: 14 })} ${d.percentage}% &mdash; código ${escapeHtml(d.code)}</span>
     `).join('');
   },
 
@@ -313,18 +338,7 @@ const GamesController = {
       const auth = window.AuthManager;
       const user = auth.getCurrentUser();
 
-      try {
-        await window.DataManager.recordGameScore(
-          user.userId,
-          user.username,
-          'Ruleta de Descuentos',
-          segmento + 1,
-          `${premio}%`
-        );
-      } catch (err) {
-        console.error('No se pudo guardar el puntaje de la ruleta:', err.message);
-        window.UIManager.toast('No se pudo registrar la partida: ' + err.message, 'error');
-      }
+      await this._registrarPartida(user, 'Ruleta de Descuentos', segmento + 1, `${premio}%`, 'de la ruleta');
 
       const discount = await window.DataManager.addUserDiscount(user.userId, premio, 'ruleta');
 
@@ -423,8 +437,8 @@ const GamesController = {
 
   voltearTarjeta(el) {
     if (this.memoria.lockBoard) return;
-    if (el.getAttribute('data-matched') === 'true') return;
-    if (el.getAttribute('data-flipped') === 'true') return;
+    if (el.getAttribute(ATTR_MEMORIA_EMPAREJADA) === 'true') return;
+    if (el.getAttribute(ATTR_MEMORIA_VOLTEADA) === 'true') return;
 
     const grid = document.getElementById('gridMemoria');
     // solo cartas sin resolver (matched=false), las parejas ya encontradas no cuentan
@@ -433,8 +447,8 @@ const GamesController = {
 
     el.textContent = '';
     el.innerHTML = Icons.svg(el.getAttribute('data-key'), { size: 26 });
-    el.classList.add('is-flipped');
-    el.setAttribute('data-flipped', 'true');
+    el.classList.add(CLASE_MEMORIA_VOLTEADA);
+    el.setAttribute(ATTR_MEMORIA_VOLTEADA, 'true');
 
     const flipped = grid.querySelectorAll('[data-flipped="true"][data-matched="false"]');
     if (flipped.length === 2) {
@@ -442,10 +456,10 @@ const GamesController = {
       const [a, b] = flipped;
 
       if (a.getAttribute('data-key') === b.getAttribute('data-key')) {
-        a.setAttribute('data-matched', 'true');
-        b.setAttribute('data-matched', 'true');
-        a.classList.remove('is-flipped');
-        b.classList.remove('is-flipped');
+        a.setAttribute(ATTR_MEMORIA_EMPAREJADA, 'true');
+        b.setAttribute(ATTR_MEMORIA_EMPAREJADA, 'true');
+        a.classList.remove(CLASE_MEMORIA_VOLTEADA);
+        b.classList.remove(CLASE_MEMORIA_VOLTEADA);
         a.classList.add('is-matched');
         b.classList.add('is-matched');
         this.memoria.aciertos++;
@@ -456,10 +470,10 @@ const GamesController = {
         setTimeout(() => {
           a.innerHTML = '';
           b.innerHTML = '';
-          a.classList.remove('is-flipped');
-          b.classList.remove('is-flipped');
-          a.setAttribute('data-flipped', 'false');
-          b.setAttribute('data-flipped', 'false');
+          a.classList.remove(CLASE_MEMORIA_VOLTEADA);
+          b.classList.remove(CLASE_MEMORIA_VOLTEADA);
+          a.setAttribute(ATTR_MEMORIA_VOLTEADA, 'false');
+          b.setAttribute(ATTR_MEMORIA_VOLTEADA, 'false');
           this.memoria.lockBoard = false;
         }, 900);
       }
@@ -478,25 +492,9 @@ const GamesController = {
       const auth = window.AuthManager;
       const user = auth.getCurrentUser();
 
-      try {
-        await window.DataManager.recordGameScore(
-          user.userId,
-          user.username,
-          'Juego de Memoria',
-          this.memoria.intentos,
-          `${creditosGanados} créditos`
-        );
-      } catch (err) {
-        console.error('No se pudo guardar el puntaje de Memoria:', err.message);
-        window.UIManager.toast('No se pudo registrar la partida: ' + err.message, 'error');
-      }
+      await this._registrarPartida(user, 'Juego de Memoria', this.memoria.intentos, `${creditosGanados} créditos`, 'de Memoria');
 
-      auth.updateUserCredits(user.userId, creditosGanados)
-        .then(updated => { if (updated) auth.profile.credits = updated.credits; })
-        .catch(err => {
-          console.error('No se pudieron sumar los créditos:', err.message);
-          window.UIManager.toast('No se pudieron sumar los créditos: ' + err.message, 'error');
-        });
+      this._sumarCreditos(user, creditosGanados);
 
       window.UIManager.toast(`Completaste el juego en ${this.memoria.segundos}s. Ganaste ${creditosGanados} créditos`, 'success');
       document.getElementById('resultadoMemoria').textContent =
@@ -596,26 +594,10 @@ const GamesController = {
     const auth = window.AuthManager;
     const user = auth.getCurrentUser();
 
-    try {
-      await window.DataManager.recordGameScore(
-        user.userId,
-        user.username,
-        'Trivia PaperCraft',
-        `${this.trivia.correctas}/${TRIVIA_PREGUNTAS.length}`,
-        `${creditosGanados} créditos`
-      );
-    } catch (err) {
-      console.error('No se pudo guardar el puntaje de Trivia:', err.message);
-      window.UIManager.toast('No se pudo registrar la partida: ' + err.message, 'error');
-    }
+    await this._registrarPartida(user, 'Trivia PaperCraft', `${this.trivia.correctas}/${TRIVIA_PREGUNTAS.length}`, `${creditosGanados} créditos`, 'de Trivia');
 
     if (creditosGanados > 0) {
-      auth.updateUserCredits(user.userId, creditosGanados)
-        .then(updated => { if (updated) auth.profile.credits = updated.credits; })
-        .catch(err => {
-          console.error('No se pudieron sumar los créditos:', err.message);
-          window.UIManager.toast('No se pudieron sumar los créditos: ' + err.message, 'error');
-        });
+      this._sumarCreditos(user, creditosGanados);
     }
 
     document.getElementById('triviaPregunta').innerHTML = '';
@@ -697,25 +679,9 @@ const GamesController = {
 
           const auth = window.AuthManager;
           const user = auth.getCurrentUser();
-          try {
-            await window.DataManager.recordGameScore(
-              user.userId,
-              user.username,
-              'Dado de la Suerte',
-              resultado,
-              `${creditosGanados} créditos`
-            );
-          } catch (err) {
-            console.error('No se pudo guardar el puntaje del Dado:', err.message);
-            window.UIManager.toast('No se pudo registrar la partida: ' + err.message, 'error');
-          }
+          await this._registrarPartida(user, 'Dado de la Suerte', resultado, `${creditosGanados} créditos`, 'del Dado');
 
-          auth.updateUserCredits(user.userId, creditosGanados)
-            .then(updated => { if (updated) auth.profile.credits = updated.credits; })
-            .catch(err => {
-              console.error('No se pudieron sumar los créditos:', err.message);
-              window.UIManager.toast('No se pudieron sumar los créditos: ' + err.message, 'error');
-            });
+          this._sumarCreditos(user, creditosGanados);
 
           window.UIManager.toast(`Sacaste ${resultado}. Ganaste ${creditosGanados} créditos`, 'success');
           document.getElementById('resultadoDado').textContent = `Sacaste ${resultado} — +${creditosGanados} créditos`;

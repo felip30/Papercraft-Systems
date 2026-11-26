@@ -5,27 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administración | PaperCraft Systems</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/main.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* el fondo también va en <html>, no solo en <body> — si no, cuando el
-       modal bloquea el scroll (position: fixed en body), se asoma el
-       blanco por defecto del navegador en el hueco que queda */
-    /* el fondo vive SOLO acá (no también en <body>): así <body> queda
-       transparente y la lluvia de números (z-index: -1) se sigue viendo
-       por delante del fondo, en vez de quedar tapada */
-    html {
-      background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1829 100%);
-    }
-    body {
-      background: transparent;
-      color: #e8ecf1;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-    }
 
     /* Letrero de "Modo Admin" con el zorro, tipo aviso de incógnito */
     .admin-mode-banner {
@@ -337,102 +318,10 @@
       min-width: 640px;
     }
   
-    /* Pantalla de carga: zorro sentado esperando + anillo girando. Se
-       muestra apenas arranca la página y se oculta solo cuando los datos
-       ya están listos para mostrarse. */
-    #pageLoader {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #0a0e27;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      transition: opacity 0.35s ease;
-    }
-    #pageLoader.page-loader-hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .page-loader-ring-wrap {
-      position: relative;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .page-loader-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 4px solid rgba(0, 217, 255, 0.15);
-      border-top-color: #00D9FF;
-      border-right-color: #FF006E;
-      animation: pageLoaderSpin 1s linear infinite;
-    }
-    .page-loader-fox {
-      width: 56px;
-      height: auto;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 0 8px rgba(255, 122, 26, 0.7));
-    }
-    @keyframes pageLoaderSpin {
-      to { transform: rotate(360deg); }
-    }
-    .page-loader-text {
-      color: #a8b8cc;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .page-loader-ring { animation: none; }
-    }
-
   </style>
 </head>
 <body lang="es">
-<div id="pageLoader">
-  <div class="page-loader-ring-wrap">
-    <div class="page-loader-ring"></div>
-    <svg class="page-loader-fox" viewBox="0 0 32 28" shape-rendering="crispEdges">
-      <!-- cola enroscada al frente -->
-      <rect x="20" y="16" width="2" height="6" fill="#FF7A1A"/>
-      <rect x="22" y="20" width="4" height="2" fill="#FF7A1A"/>
-      <rect x="24" y="16" width="2" height="4" fill="#FF7A1A"/>
-      <!-- cuerpo sentado (más ancho abajo) -->
-      <rect x="8" y="14" width="14" height="8" fill="#FF9F3D"/>
-      <rect x="6" y="20" width="18" height="4" fill="#FF9F3D"/>
-      <rect x="10" y="18" width="8" height="4" fill="#FFF3E0"/>
-      <!-- cabeza -->
-      <rect x="9" y="4" width="12" height="10" fill="#FF9F3D"/>
-      <rect x="11" y="10" width="8" height="4" fill="#FFF3E0"/>
-      <!-- orejas -->
-      <rect x="9" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <rect x="18" y="1" width="3" height="4" fill="#FF7A1A"/>
-      <!-- ojos cerrados (esperando tranquilo) -->
-      <rect x="12" y="8" width="2" height="1" fill="#2B1810"/>
-      <rect x="17" y="8" width="2" height="1" fill="#2B1810"/>
-      <!-- hocico -->
-      <rect x="14" y="11" width="2" height="2" fill="#2B1810"/>
-      <!-- patas delanteras -->
-      <rect x="9" y="21" width="2" height="3" fill="#2B1810"/>
-      <rect x="15" y="21" width="2" height="3" fill="#2B1810"/>
-    </svg>
-  </div>
-  <p class="page-loader-text">Cargando...</p>
-</div>
-<script>
-  // Salvaguarda: si algo falla o tarda demasiado, el loader se oculta
-  // solo a los 8 segundos, para no dejar a nadie mirando la pantalla de
-  // carga para siempre.
-  setTimeout(() => {
-    const el = document.getElementById('pageLoader');
-    if (el) el.classList.add('page-loader-hidden');
-  }, 8000);
-</script>
+<script src="js/page-loader.js"></script>
 
 
 
@@ -776,13 +665,14 @@
 <!-- SCRIPTS -->
 <script src="js/utils/icons.js"></script>
 <script src="js/utils/currency.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="js/invoice.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/dataManager.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/product-form.js"></script>
 
 <script>
   window.addEventListener('load', async () => {
@@ -803,6 +693,14 @@
     }
 
     loadDashboard();
+
+    // si el catálogo cambia (otro admin, una compra, tiempo real),
+    // se refrescan el inventario, la alerta de stock y las estadísticas
+    window.addEventListener('productsUpdated', () => {
+      loadInventario();
+      checkLowStock();
+      loadStats();
+    });
   });
 
   function loadDashboard() {
@@ -965,8 +863,11 @@
     if (lowStock.length > 0) {
       const alertBox = document.getElementById('alertBox');
       const alertText = document.getElementById('alertText');
-      alertText.innerHTML = `${lowStock.length} producto(s) con stock bajo (≤5 unidades): ${lowStock.map(p => p.nombre).join(', ')}`;
+      alertText.innerHTML = `${lowStock.length} producto(s) con stock bajo (≤5 unidades): ${lowStock.map(p => escapeHtml(p.nombre)).join(', ')}`;
       alertBox.style.display = 'block';
+    } else {
+      const alertBox = document.getElementById('alertBox');
+      if (alertBox) alertBox.style.display = 'none';
     }
   }
 
@@ -976,8 +877,8 @@
 
     tbody.innerHTML = products.map(p => `
       <tr>
-        <td>${Icons.svg(p.icon || 'package', { size: 16 })} ${p.nombre}</td>
-        <td style="text-transform: capitalize;">${p.categoria}</td>
+        <td>${Icons.svg(p.icon || 'package', { size: 16 })} ${escapeHtml(p.nombre)}</td>
+        <td style="text-transform: capitalize;">${escapeHtml(p.categoria)}</td>
         <td>${formatCOP(p.precio)}</td>
         <td>
           ${p.stock}
@@ -994,89 +895,20 @@
   }
 
   function openAddProductoAdmin() {
-    const form = `
-      <form onsubmit="handleAddProductoAdmin(event)" style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Nombre del producto</label>
-          <input type="text" id="add-prod-nombre" placeholder="Ej: Teclado Mecánico RGB" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Categoría</label>
-          <select id="add-prod-categoria" required style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-            <option value="papelería">Papelería</option>
-            <option value="tecnología">Tecnología</option>
-          </select>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Precio</label>
-          <input type="number" id="add-prod-precio" placeholder="52000" step="1000" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Descripción</label>
-          <textarea id="add-prod-descripcion" rows="3" placeholder="Descripción del producto (se muestra en la tienda)"
-                    style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;"></textarea>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Stock</label>
-          <input type="number" id="add-prod-stock" placeholder="50" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">URL de imagen (opcional)</label>
-          <input type="text" id="add-prod-imagen" placeholder="https://..."
-                 oninput="previewProductoImagen('add-prod-imagen-preview', this.value)"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-          <p style="color:#6b7a90; font-size:0.72rem;">Si la dejas vacía, se muestra el ícono en la tienda.</p>
-          <img id="add-prod-imagen-preview" style="max-width:100%; max-height:120px; border-radius:8px; display:none;" onerror="this.style.display='none';" onload="this.style.display='block';">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Icono</label>
-          <select id="add-prod-icon"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-            <option value="package">Paquete</option>
-            <option value="notebook">Cuaderno</option>
-            <option value="book">Libro</option>
-            <option value="palette">Paleta</option>
-            <option value="document">Documento</option>
-            <option value="gamepad">Tecnología</option>
-            <option value="target">Precisión</option>
-            <option value="bell">Audio</option>
-            <option value="gift">Regalo</option>
-            <option value="star">Destacado</option>
-          </select>
-        </div>
-        <button type="submit" class="btn" style="width: 100%; padding: 12px;">Agregar Producto</button>
-      </form>
-    `;
+    const form = buildProductForm({
+      prefijo: 'add-prod',
+      color: '#FF006E',
+      onSubmit: 'handleAddProductoAdmin(event)',
+      etiquetaNombre: 'Nombre del producto',
+      textoBoton: 'Agregar Producto'
+    });
     window.UIManager.openModal(form, 'Nuevo Producto');
-  }
-
-  // vista previa mientras se escribe la URL; si no carga, se oculta
-  function previewProductoImagen(previewId, url) {
-    const img = document.getElementById(previewId);
-    if (!img) return;
-    if (!url) {
-      img.style.display = 'none';
-      img.removeAttribute('src');
-      return;
-    }
-    img.src = url;
   }
 
   async function handleAddProductoAdmin(event) {
     event.preventDefault();
     try {
-      const product = {
-        nombre: document.getElementById('add-prod-nombre').value,
-        categoria: document.getElementById('add-prod-categoria').value,
-        precio: document.getElementById('add-prod-precio').value,
-        stock: document.getElementById('add-prod-stock').value,
-        icon: document.getElementById('add-prod-icon').value || 'package',
-        imagen: document.getElementById('add-prod-imagen').value.trim(),
-        description: document.getElementById('add-prod-descripcion').value.trim()
-      };
+      const product = readProductForm('add-prod');
       await window.DataManager.addProduct(product);
       window.UIManager.closeModal();
       window.UIManager.toast('Producto agregado', 'success');
@@ -1090,76 +922,19 @@
 
   function openEditProductoAdmin(productId) {
     const p = window.DataManager.getProductById(productId);
-    const form = `
-      <form onsubmit="handleEditProductoAdmin(${productId}, event)" style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Nombre</label>
-          <input type="text" id="edit-prod-nombre" value="${p.nombre}" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Categoría</label>
-          <select id="edit-prod-categoria" required style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-            <option value="papelería" ${p.categoria === 'papelería' ? 'selected' : ''}>Papelería</option>
-            <option value="tecnología" ${p.categoria === 'tecnología' ? 'selected' : ''}>Tecnología</option>
-          </select>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Precio</label>
-          <input type="number" id="edit-prod-precio" value="${p.precio}" step="1000" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Descripción</label>
-          <textarea id="edit-prod-descripcion" rows="3" placeholder="Descripción del producto (se muestra en la tienda)"
-                    style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${escapeHtml(p.description || '')}</textarea>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Stock</label>
-          <input type="number" id="edit-prod-stock" value="${p.stock}" required
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">URL de imagen (opcional)</label>
-          <input type="text" id="edit-prod-imagen" value="${escapeHtml(p.imagen || '')}" placeholder="https://..."
-                 oninput="previewProductoImagen('edit-prod-imagen-preview', this.value)"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-          <p style="color:#6b7a90; font-size:0.72rem;">Si la dejas vacía, se sigue mostrando el ícono en la tienda.</p>
-          <img id="edit-prod-imagen-preview" src="${escapeHtml(p.imagen || '')}" style="max-width:100%; max-height:120px; border-radius:8px; ${p.imagen ? '' : 'display:none;'}" onerror="this.style.display='none';" onload="this.style.display='block';">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <label style="color: #FF006E; font-weight: 700;">Icono</label>
-          <select id="edit-prod-icon"
-                 style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
-            <option value="package" ${p.icon === 'package' ? 'selected' : ''}>Paquete</option>
-            <option value="notebook" ${p.icon === 'notebook' ? 'selected' : ''}>Cuaderno</option>
-            <option value="book" ${p.icon === 'book' ? 'selected' : ''}>Libro</option>
-            <option value="palette" ${p.icon === 'palette' ? 'selected' : ''}>Paleta</option>
-            <option value="document" ${p.icon === 'document' ? 'selected' : ''}>Documento</option>
-            <option value="gamepad" ${p.icon === 'gamepad' ? 'selected' : ''}>Tecnología</option>
-            <option value="target" ${p.icon === 'target' ? 'selected' : ''}>Precisión</option>
-            <option value="bell" ${p.icon === 'bell' ? 'selected' : ''}>Audio</option>
-            <option value="gift" ${p.icon === 'gift' ? 'selected' : ''}>Regalo</option>
-            <option value="star" ${p.icon === 'star' ? 'selected' : ''}>Destacado</option>
-          </select>
-        </div>
-        <button type="submit" class="btn" style="width: 100%; padding: 12px;">Guardar Cambios</button>
-      </form>
-    `;
-    window.UIManager.openModal(form, `Editar: ${p.nombre}`);
+    const form = buildProductForm({
+      prefijo: 'edit-prod',
+      color: '#FF006E',
+      onSubmit: `handleEditProductoAdmin(${Number(productId)}, event)`,
+      producto: p,
+      notaImagen: 'Si la dejas vacía, se sigue mostrando el ícono en la tienda.'
+    });
+    window.UIManager.openModal(form, `Editar: ${escapeHtml(p.nombre)}`);
   }
 
   async function handleEditProductoAdmin(productId, event) {
     event.preventDefault();
-    const updates = {
-      nombre: document.getElementById('edit-prod-nombre').value,
-      categoria: document.getElementById('edit-prod-categoria').value,
-      precio: document.getElementById('edit-prod-precio').value,
-      stock: document.getElementById('edit-prod-stock').value,
-      icon: document.getElementById('edit-prod-icon').value || 'package',
-      imagen: document.getElementById('edit-prod-imagen').value.trim(),
-      description: document.getElementById('edit-prod-descripcion').value.trim()
-    };
+    const updates = readProductForm('edit-prod');
     const updated = await window.DataManager.updateProduct(productId, updates);
     if (!updated) {
       window.UIManager.toast('No se pudo actualizar el producto', 'error');
@@ -1266,7 +1041,7 @@
           <td>${formatCOP(order.total)}</td>
           <td>${order.items.length} artículo(s)</td>
           <td>${order.paymentMethod === 'tienda' ? '<span class="badge badge-active">En tienda</span>' : '<span class="badge badge-admin">Tarjeta</span>'}</td>
-          <td><span class="badge badge-${order.status}">${order.status.toUpperCase()}</span></td>
+          <td><span class="badge badge-${escapeHtml(order.status)}">${escapeHtml(order.status.toUpperCase())}</span></td>
           <td>${new Date(order.date).toLocaleDateString()}</td>
           <td>
             <select onchange="cambiarStatusPedido(${order.id}, this.value)" style="padding: 5px; background: rgba(15,24,41,0.8); border: 1px solid #00D9FF; color: #e8ecf1; border-radius: 4px;">
@@ -1339,9 +1114,9 @@
       tbody.innerHTML = scores.map(score => `
         <tr>
           <td><strong>${escapeHtml(score.userName)}</strong></td>
-          <td>${score.game}</td>
-          <td>${score.score}</td>
-          <td><span class="badge badge-success">${score.prize}</span></td>
+          <td>${escapeHtml(score.game)}</td>
+          <td>${escapeHtml(score.score)}</td>
+          <td><span class="badge badge-success">${escapeHtml(score.prize)}</span></td>
           <td>${new Date(score.date).toLocaleString('es-ES')}</td>
         </tr>
       `).reverse().join('');
@@ -1399,9 +1174,9 @@
 
     tbody.innerHTML = games.map(g => `
       <tr>
-        <td>${Icons.svg(g.icon || 'gamepad', { size: 16 })} ${g.titulo}</td>
-        <td>${g.estudio}</td>
-        <td>${g.categoria}</td>
+        <td>${Icons.svg(g.icon || 'gamepad', { size: 16 })} ${escapeHtml(g.titulo)}</td>
+        <td>${escapeHtml(g.estudio)}</td>
+        <td>${escapeHtml(g.categoria)}</td>
         <td>${g.imagen ? '<span class="badge badge-active">Sí</span>' : '<span class="badge badge-inactive">Sin imagen</span>'}</td>
         <td>
           <button class="action-btn" onclick="openEditVaultGameModal(${g.id})">Editar</button>
@@ -1416,22 +1191,22 @@
     return `
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Título del juego</label>
-        <input type="text" id="vg-titulo" value="${game.titulo || ''}" placeholder="Ej: Hades" required
+        <input type="text" id="vg-titulo" value="${escapeHtml(game.titulo || '')}" placeholder="Ej: Hades" required
                style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Estudio / Desarrollador</label>
-        <input type="text" id="vg-estudio" value="${game.estudio || ''}" placeholder="Ej: Supergiant Games"
+        <input type="text" id="vg-estudio" value="${escapeHtml(game.estudio || '')}" placeholder="Ej: Supergiant Games"
                style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Categoría / Género</label>
-        <input type="text" id="vg-categoria" value="${game.categoria || ''}" placeholder="Ej: Roguelike de acción"
+        <input type="text" id="vg-categoria" value="${escapeHtml(game.categoria || '')}" placeholder="Ej: Roguelike de acción"
                style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">URL de imagen (opcional)</label>
-        <input type="url" id="vg-imagen" value="${game.imagen || ''}" placeholder="https://..."
+        <input type="url" id="vg-imagen" value="${escapeHtml(game.imagen || '')}" placeholder="https://..."
                style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px;">
         <p style="color:#6b7a90; font-size:0.72rem;">Si la dejas vacía, se muestra una portada ilustrada automática. Usa solo imágenes con licencia para publicar.</p>
       </div>
@@ -1444,17 +1219,17 @@
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Resumen corto</label>
         <textarea id="vg-resumen" rows="2" placeholder="Una o dos frases sobre el juego"
-                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${game.resumen || ''}</textarea>
+                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${escapeHtml(game.resumen || '')}</textarea>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Descripción detallada</label>
         <textarea id="vg-descripcion" rows="4" placeholder="Descripción más completa del juego"
-                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${game.descripcionDetallada || ''}</textarea>
+                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${escapeHtml(game.descripcionDetallada || '')}</textarea>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <label style="color: #FF006E; font-weight: 700;">Tutorial (un consejo por línea)</label>
         <textarea id="vg-tutorial" rows="4" placeholder="Un tip por línea"
-                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${(game.tutorial || []).join('\n')}</textarea>
+                  style="padding: 10px; background: rgba(15, 24, 41, 0.8); border: 1px solid #FF006E; color: #e8ecf1; border-radius: 6px; font-family: inherit; resize: vertical;">${escapeHtml((game.tutorial || []).join('\n'))}</textarea>
       </div>
     `;
   }
@@ -1514,7 +1289,7 @@
         <button type="submit" class="btn" style="width: 100%; padding: 12px;">Guardar Cambios</button>
       </form>
     `;
-    window.UIManager.openModal(form, `Editar: ${game.titulo}`);
+    window.UIManager.openModal(form, `Editar: ${escapeHtml(game.titulo)}`);
   }
 
   async function handleEditVaultGame(id, event) {

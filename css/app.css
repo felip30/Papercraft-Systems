@@ -676,3 +676,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Campos de formulario de las páginas de /pages (checkout, perfil).
+   profile.css agrega encima su ancho y padding propios. */
+.form-control {
+  padding: 12px;
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
+}

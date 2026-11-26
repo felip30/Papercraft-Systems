@@ -151,20 +151,10 @@
   font-size: 13px;
 }
 
+/* base de .form-control y :focus en app.css; aquí solo lo propio del perfil */
 .form-control {
   width: 100%;
   padding: 10px 12px;
-  border: 1.5px solid var(--gris-200);
-  border-radius: var(--r-md);
-  font-size: 13px;
-  font-family: inherit;
-  transition: all 0.3s;
-}
-
-.form-control:focus {
-  outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgba(11, 83, 148, 0.1);
 }
 
 .form-control:disabled {
@@ -286,13 +276,7 @@
   margin-bottom: 30px;
 }
 
-.stat-card {
-  background: linear-gradient(135deg, var(--primary-50), var(--secondary-50));
-  border: 1.5px solid var(--primary-200);
-  border-radius: var(--r-lg);
-  padding: 20px;
-  text-align: center;
-}
+/* .stat-card viene de app.css */
 
 .stat-icon {
   font-size: 36px;

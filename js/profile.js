@@ -3,6 +3,10 @@
  * Gestión de perfil de usuario
  */
 
+// Conexión a Supabase creada en js/supabase-config.js (window.supabase es
+// la librería, no la conexión). Si no está, la página usa el perfil demo.
+const perfilDb = window.supabaseClient || null;
+
 const ProfileManager = {
   currentUser: null,
 
@@ -12,15 +16,15 @@ const ProfileManager = {
 
   async loadProfile() {
     try {
-      if (!supabase) {
+      if (!perfilDb) {
         console.log('Cargando perfil demo');
         return this.getDemoProfile();
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await perfilDb.auth.getUser();
       if (!user) throw new Error('No autenticado');
 
-      const { data, error } = await supabase
+      const { data, error } = await perfilDb
         .from('usuarios')
         .select('*')
         .eq('id', user.id)
@@ -42,15 +46,15 @@ const ProfileManager = {
 
   async updateProfile(updates) {
     try {
-      if (!supabase) {
+      if (!perfilDb) {
         console.log('Actualizando perfil (demo)');
         this.currentUser = { ...this.currentUser, ...updates };
         return this.currentUser;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await perfilDb.auth.getUser();
       
-      const { data, error } = await supabase
+      const { data, error } = await perfilDb
         .from('usuarios')
         .update(updates)
         .eq('id', user.id)
@@ -71,14 +75,24 @@ const ProfileManager = {
   // CAMBIAR CONTRASEÑA
   // ════════════════════════════════════════════════════════════════
 
-  async changePassword(newPassword) {
+  async changePassword(currentPassword, newPassword) {
     try {
-      if (!supabase) {
+      if (!perfilDb) {
         console.log('Contraseña cambiada (demo)');
         return true;
       }
 
-      const { error } = await supabase.auth.updateUser({
+      // Antes de cambiarla se confirma la contraseña actual (si no, cualquiera
+      // con la sesión abierta en ese equipo podría cambiarla).
+      const { data: { user } } = await perfilDb.auth.getUser();
+      if (!user) throw new Error('Debes iniciar sesión');
+      const { error: reauthError } = await perfilDb.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword
+      });
+      if (reauthError) throw new Error('La contraseña actual es incorrecta');
+
+      const { error } = await perfilDb.auth.updateUser({
         password: newPassword
       });
 
@@ -97,14 +111,14 @@ const ProfileManager = {
 
   async addAddress(address) {
     try {
-      if (!supabase) {
+      if (!perfilDb) {
         console.log('Dirección agregada (demo)');
         return { id: Date.now(), ...address };
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await perfilDb.auth.getUser();
 
-      const { data, error } = await supabase
+      const { data, error } = await perfilDb
         .from('direcciones')
         .insert([{
           usuario_id: user.id,
@@ -129,26 +143,26 @@ const ProfileManager = {
 
   async getUserStats() {
     try {
-      if (!supabase) {
+      if (!perfilDb) {
         return this.getDemoStats();
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await perfilDb.auth.getUser();
 
       // Obtener número de pedidos
-      const { data: orders } = await supabase
+      const { data: orders } = await perfilDb
         .from('pedidos')
         .select('total')
         .eq('usuario_id', user.id);
 
       // Obtener número de reseñas
-      const { data: reviews } = await supabase
+      const { data: reviews } = await perfilDb
         .from('resenas')
         .select('id')
         .eq('usuario_id', user.id);
 
       // Obtener wishlist
-      const wishlistCount = (await supabase
+      const wishlistCount = (await perfilDb
         .from('wishlist')
         .select('*')
         .eq('usuario_id', user.id)).data?.[0]?.productos?.length || 0;
@@ -248,6 +262,10 @@ async function changePassword() {
     const newPassword = document.getElementById('newPassword')?.value;
     const confirmPassword = document.getElementById('confirmPassword')?.value;
 
+    if (!currentPassword) {
+      throw new Error('Escribe tu contraseña actual');
+    }
+
     if (newPassword !== confirmPassword) {
       throw new Error('Las contraseñas no coinciden');
     }
@@ -256,7 +274,7 @@ async function changePassword() {
       throw new Error('La contraseña debe tener al menos 8 caracteres');
     }
 
-    await ProfileManager.changePassword(newPassword);
+    await ProfileManager.changePassword(currentPassword, newPassword);
     alert(' Contraseña actualizada');
 
     document.getElementById('currentPassword').value = '';

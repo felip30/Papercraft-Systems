@@ -172,51 +172,10 @@ function handlePaymentError(error) {
 // WEBHOOK HANDLERS (en tu servidor)
 // ════════════════════════════════════════════════════════════════
 
-/*
-// En tu servidor (Node.js/Express ejemplo):
-
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const express = require('express');
-const app = express();
-
-// Webhook endpoint
-app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  
-  let event;
-  
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
-
-  // Manejar eventos
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      console.log('Pago exitoso:', event.data.object);
-      // Actualizar base de datos, enviar email, etc.
-      break;
-    
-    case 'payment_intent.payment_failed':
-      console.log('Pago fallido:', event.data.object);
-      // Notificar al usuario
-      break;
-    
-    case 'charge.refunded':
-      console.log('Reembolso procesado:', event.data.object);
-      // Actualizar estado del pedido
-      break;
-  }
-
-  res.json({received: true});
-});
-*/
+// Los webhooks de Stripe (pago exitoso, pago fallido, reembolso) se
+// atienden en un servidor, nunca en el navegador: allí se verifica la firma
+// con stripe.webhooks.constructEvent() usando STRIPE_WEBHOOK_SECRET y se
+// actualiza el pedido. Guía oficial: https://docs.stripe.com/webhooks
 
 // ════════════════════════════════════════════════════════════════
 // VARIABLES GLOBALES

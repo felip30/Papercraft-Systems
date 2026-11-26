@@ -4,7 +4,7 @@
  * Inicializa el cliente de Supabase para todo el sitio.
  * Requiere que el CDN de Supabase esté cargado ANTES que este archivo:
  *
- *   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ *   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-..." crossorigin="anonymous"></script>
  *   <script src="js/supabase-config.js"></script>   <!-- o ../js/ dentro de /pages -->
  *
  * La "Publishable Key" (anon key) está pensada para vivir en el cliente:

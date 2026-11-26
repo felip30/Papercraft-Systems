@@ -2,6 +2,10 @@
  * GESTIÓN DE UI Y NOTIFICACIONES AVANZADA - PaperCraft Systems
  * Toast notifications, modales, y actualización de interfaz
  */
+// Ids y clases que se usan varias veces
+const CLASE_NAV_ABIERTO = 'nav-links-open';
+const ID_TOAST_CONTAINER = 'toast-container';
+const ID_CUSTOM_MODAL = 'custom-modal';
 
 /**
  * Limpia cualquier texto antes de insertarlo como HTML, para que no se
@@ -33,7 +37,7 @@ function toggleMobileNav() {
   const links = document.getElementById('navLinks');
   const btn = document.getElementById('navHamburger');
   if (!links || !btn) return;
-  links.classList.toggle('nav-links-open');
+  links.classList.toggle(CLASE_NAV_ABIERTO);
   btn.classList.toggle('nav-hamburger-open');
 }
 
@@ -43,10 +47,10 @@ function toggleMobileNav() {
 window.addEventListener('click', (e) => {
   const links = document.getElementById('navLinks');
   const btn = document.getElementById('navHamburger');
-  if (!links || !btn || !links.classList.contains('nav-links-open')) return;
+  if (!links || !btn || !links.classList.contains(CLASE_NAV_ABIERTO)) return;
   if (btn.contains(e.target)) return;
   if (links.contains(e.target) && e.target.tagName !== 'A') return;
-  links.classList.remove('nav-links-open');
+  links.classList.remove(CLASE_NAV_ABIERTO);
   btn.classList.remove('nav-hamburger-open');
 });
 
@@ -61,10 +65,10 @@ class UIManager {
   // ======================================
 
   initToastContainer() {
-    if (document.getElementById('toast-container')) return;
+    if (document.getElementById(ID_TOAST_CONTAINER)) return;
 
     const container = document.createElement('div');
-    container.id = 'toast-container';
+    container.id = ID_TOAST_CONTAINER;
     container.style.cssText = `
       position: fixed;
       top: 20px;
@@ -78,7 +82,7 @@ class UIManager {
   }
 
   toast(message, type = 'success', duration = 3000) {
-    const container = document.getElementById('toast-container');
+    const container = document.getElementById(ID_TOAST_CONTAINER);
     if (!container) return;
 
     const toast = document.createElement('div');
@@ -117,7 +121,7 @@ class UIManager {
       font-weight: 700;
       font-size: 0.9rem;
       backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px ${style.color.replace(/[^,]+(?=\))/, '0.5')};
+      box-shadow: 0 0 20px ${style.color};
       animation: slideIn 0.3s ease-out;
       max-width: 300px;
     `;
@@ -146,10 +150,10 @@ class UIManager {
   // ======================================
 
   openModal(content, title = 'Modal', onClose = null) {
-    let modal = document.getElementById('custom-modal');
+    let modal = document.getElementById(ID_CUSTOM_MODAL);
     if (!modal) {
       modal = document.createElement('div');
-      modal.id = 'custom-modal';
+      modal.id = ID_CUSTOM_MODAL;
       modal.style.cssText = `
         position: fixed;
         top: 0;
@@ -214,7 +218,7 @@ class UIManager {
   }
 
   closeModal() {
-    const modal = document.getElementById('custom-modal');
+    const modal = document.getElementById(ID_CUSTOM_MODAL);
     if (modal) {
       modal.style.display = 'none';
       if (this.currentModalOnClose) {
@@ -643,12 +647,14 @@ async function enviarCorreoRecuperacion(identifier) {
 
   const result = await window.AuthManager.initiatePasswordRecovery(email);
 
-  if (result.success) {
-    window.UIManager.toast(result.message, 'success');
-    window.UIManager.closeModal();
-  } else {
-    window.UIManager.toast(result.message, 'error');
-  }
+  mostrarResultadoYCerrar(result);
+}
+
+// Muestra el mensaje de una operación (verde si salió bien, rojo si no) y,
+// si salió bien, cierra el modal abierto.
+function mostrarResultadoYCerrar(result) {
+  window.UIManager.toast(result.message, result.success ? 'success' : 'error');
+  if (result.success) window.UIManager.closeModal();
 }
 
 // Manejar envío de login
@@ -743,7 +749,7 @@ function openPurchaseHistoryModal() {
               <p style="color:#e8ecf1; font-size:0.9rem; font-weight:700;">Orden #${o.id} &mdash; ${fecha}</p>
               <p style="color:#a8b8cc; font-size:0.78rem;">
                 ${o.items.length} artículo(s) &middot; ${metodo} &middot;
-                <span style="color:${estadoColor}; font-weight:700; text-transform:capitalize;">${o.status}</span>
+                <span style="color:${estadoColor}; font-weight:700; text-transform:capitalize;">${escapeHtml(o.status)}</span>
               </p>
             </div>
             <p style="color:#39FF14; font-weight:900;">${formatCOP(o.total)}</p>
@@ -1106,12 +1112,7 @@ async function handleChangePassword(event) {
 
   const result = await auth.changeOwnPassword(currentPassword, newPassword, confirmPassword);
 
-  if (result.success) {
-    window.UIManager.toast(result.message, 'success');
-    window.UIManager.closeModal();
-  } else {
-    window.UIManager.toast(result.message, 'error');
-  }
+  mostrarResultadoYCerrar(result);
 }
 
 // Logout (disponible globalmente en todas las páginas)

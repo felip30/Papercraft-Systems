@@ -6,6 +6,13 @@ Thumbs.db
 .vscode/
 *.swp
 
-# Por si alguna vez se agrega un .env real (hoy el proyecto no usa ninguno)
+# Por si alguna vez se agrega un .env real
 .env
 .env.local
+
+# Dependencias y reportes de pruebas
+node_modules/
+package-lock.json
+test-results/
+tests/e2e/reports/
+tests/load/reports/
